@@ -5,7 +5,7 @@ package com.gh.model;
  * 예약 ID, 이름, 타입, 가격, 최대 수용 인원, 현재 인원, 설명정보를 포함합니다.
  */
 public class Guesthouse {
-	private int bookingId;			//예약 고유번호
+	private String bookingId;			//예약 고유번호
 	private String name;			//게스트하우스 이름
 	private String type;			//게스트하우스 유형
 	private double pricePerDays;	//1박당 가격
@@ -18,7 +18,6 @@ public class Guesthouse {
 	 */
 	public Guesthouse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * @param bookingId		예약 고유 번호
@@ -29,7 +28,7 @@ public class Guesthouse {
 	 * @param currentPeople	현재 예약된 인원
 	 * @param description	게스트하우스 설명
 	 */
-	public Guesthouse(int bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople,
+	public Guesthouse(String bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople,
 			String description) {
 		super();
 		this.bookingId = bookingId;
@@ -43,13 +42,13 @@ public class Guesthouse {
 	/**
 	 * @return 예약 고유 번호
 	 */
-	public int getBookingId() {
+	public String getBookingId() {
 		return bookingId;
 	}
 	/**
 	 * @param bookingId 예약 고유 번호 설정
 	 */
-	public void setBookingId(int bookingId) {
+	public void setBookingId(String bookingId) {
 		this.bookingId = bookingId;
 	}
 	/**
@@ -131,5 +130,4 @@ public class Guesthouse {
 				+ pricePerDays + ", maxPeople=" + maxPeople + ", currentPeople=" + currentPeople + ", description="
 				+ description + "]";
 	}
-	
-} //class
+}
