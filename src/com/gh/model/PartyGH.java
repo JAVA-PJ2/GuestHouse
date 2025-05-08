@@ -1,5 +1,7 @@
 package com.gh.model;
 
+import java.time.LocalDate;
+
 /**
  * {@code PartyGH} 클래스는 반려동물 관련 파티 게스트하우스를 나타내는 클래스입니다.
  * <p>
@@ -39,8 +41,8 @@ public class PartyGH extends Guesthouse {
      * @param description     공간 설명
      * @param minAgeRequired  파티 참여를 위한 최소 연령
      */
-    public PartyGH(int bookingId, String name, String type, double pricePerDays,
-                   int maxPeople, int currentPeople, String description, int minAgeRequired) {
+    public PartyGH(String bookingId, LocalDate startDate, LocalDate endDate, int bookingDays, int numberOfPeople, Guesthouse guesthouse, String name, String type, double pricePerDays, int maxPeople, int currentPeople,
+			String description, int minAgeRequired) {
         super(bookingId, name, type, pricePerDays, maxPeople, currentPeople, description);
         PartyGH.minAgeRequired = minAgeRequired;
     }

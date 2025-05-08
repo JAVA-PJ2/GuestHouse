@@ -37,7 +37,7 @@ public class MusicGH extends Guesthouse {
      * @param isSoundProof 방음 시설 여부
      * @param instrumentRental 악기 대여 가능 여부
      */
-    public MusicGH(int bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople, String description, boolean hasinstruments, boolean isSoundProof, boolean instrumentRental) {
+    public MusicGH(String bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople, String description, boolean hasinstruments, boolean isSoundProof, boolean instrumentRental) {
         super(bookingId, name, type, pricePerDays, maxPeople, currentPeople, description);
         this.hasinstruments = hasinstruments;
         this.isSoundProof = isSoundProof;

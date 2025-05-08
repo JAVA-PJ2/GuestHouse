@@ -83,7 +83,7 @@ public class PetGH extends Guesthouse {
      * @param petType 반려동물 종류 (DOG, CAT)
      * @param emergency 응급 상황 대처 가능 여부
      */
-    public PetGH(int bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople,
+    public PetGH(String bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople,
                  String description, double careSystemPrice, PetType petType, boolean emergency) {
         super(bookingId, name, type, pricePerDays, maxPeople, currentPeople, description);
         this.careSystemPrice = careSystemPrice;
