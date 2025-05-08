@@ -26,7 +26,6 @@ public class MusicGH extends Guesthouse {
 
     /**
      * 모든 특성을 초기화하는 생성자입니다.
-     *
      * @param bookingId 예약 ID
      * @param name 게스트하우스 이름
      * @param type 공간 유형
