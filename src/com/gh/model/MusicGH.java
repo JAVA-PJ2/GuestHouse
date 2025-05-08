@@ -8,8 +8,7 @@ package com.gh.model;
  * 
  * @author YangJunYong 
  */
-public class MusicGH {
-
+public class MusicGH extends Guesthouse {
     /**
      * 악기를 보유하고 있는지 여부
      */
@@ -27,13 +26,20 @@ public class MusicGH {
 
     /**
      * 모든 특성을 초기화하는 생성자입니다.
-     * 
+     *
+     * @param bookingId 예약 ID
+     * @param name 게스트하우스 이름
+     * @param type 공간 유형
+     * @param pricePerDays 하루 대여 요금
+     * @param maxPeople 수용 가능 인원
+     * @param currentPeople 현재 예약된 인원
+     * @param description 공간 설명
      * @param hasinstruments 악기 보유 여부
      * @param isSoundProof 방음 시설 여부
      * @param instrumentRental 악기 대여 가능 여부
      */
-    public MusicGH(boolean hasinstruments, boolean isSoundProof, boolean instrumentRental) {
-        super();
+    public MusicGH(int bookingId, String name, String type, double pricePerDays, int maxPeople, int currentPeople, String description, boolean hasinstruments, boolean isSoundProof, boolean instrumentRental) {
+        super(bookingId, name, type, pricePerDays, maxPeople, currentPeople, description);
         this.hasinstruments = hasinstruments;
         this.isSoundProof = isSoundProof;
         this.instrumentRental = instrumentRental;
