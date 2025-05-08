@@ -20,7 +20,7 @@ public interface BookingService {
      *
      * @param bookingId 삭제할 예약의 고유 식별자
      */
-	void deleteBooking(int bookingId);
+	void deleteBooking(String bookingId);
 	
 	/**
      * 기존 예약 정보를 수정합니다.
