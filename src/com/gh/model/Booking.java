@@ -77,7 +77,7 @@ public class Booking {
 	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 		if(this.bookingDays > 0) {
-			this.endDate = this.startDate.plusDays(this.bookingDays)
+			this.endDate = this.startDate.plusDays(this.bookingDays);
 		}
 	}
 
