@@ -14,7 +14,7 @@ public class Guesthouse {
 	private String description;		//게스트하우스 설명
 	
 	/**
-	 * 기본 생서자
+	 * 기본 생성자
 	 */
 	public Guesthouse() {
 		super();
