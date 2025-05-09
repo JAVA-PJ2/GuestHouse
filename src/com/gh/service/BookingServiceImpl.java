@@ -177,4 +177,14 @@ public class BookingServiceImpl implements BookingService {
 //		}
 //		return find;
 //	}
+	
+	@Override 
+	/**
+	 * 해당 고객의 모든 예약 조회
+	 * 
+	 * <p>고객명은 제외하고 출력</p>
+	 */
+	public List<Booking> findBooking(Customer cs) {
+		return cs.getBookings();
+	}
 }

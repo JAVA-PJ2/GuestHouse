@@ -1,5 +1,7 @@
 package com.gh.service;
 
+import java.util.List;
+
 import com.gh.model.Booking;
 import com.gh.user.Customer;
 
@@ -29,4 +31,11 @@ public interface BookingService {
      * @param b 수정할 예약 객체. bookingId를 포함해야 하며, 해당 ID의 예약이 존재해야 합니다.
      */
 	void updateBooking(Customer c, Booking b);
+
+	/**
+	 * 해당 고객의 예약 정보 조회합니다.
+	 * 
+	 * @param 고객의 이름을 제외한 예약 정보
+	 */
+	List<Booking> findBooking(Customer cs);
 }
