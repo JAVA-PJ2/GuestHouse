@@ -142,6 +142,10 @@ public class BookingServiceImpl implements BookingService {
 	        // 10. 예약 정보 시스템에 반영
 	        bookings.remove(original);
 	        bookings.add(b);
+	        
+		    // 고객 예약 목록에도 반영!
+		    c.getBookings().remove(original);
+		    c.getBookings().add(b);
 
 	        System.out.println("예약이 성공적으로 변경되었습니다: " + b.getStartDate() + " ~ " + b.getEndDate());
 	        System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
