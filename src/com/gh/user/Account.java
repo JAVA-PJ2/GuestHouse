@@ -18,7 +18,7 @@ public class Account {
     /**
      * 계좌 잔액
      */
-    private String balance;
+    private double balance;
 
     /**
      * 기본 생성자입니다.
@@ -34,7 +34,7 @@ public class Account {
      * @param username 사용자 이름
      * @param balance 계좌 잔액
      */
-    public Account(String username, String balance) {
+    public Account(String username, double balance) {
         super();
         this.username = username;
         this.balance = balance;
@@ -48,13 +48,22 @@ public class Account {
     public String getUsername() {
         return username;
     }
+    
+    /**
+     * 계좌의 잔액을 설정합니다.
+     * 
+     * @param balance 계좌 잔액
+     */
+    public void setBalance(double balance) {
+    	this.balance = balance;
+    }
 
     /**
      * 계좌 잔액을 반환합니다.
      * 
      * @return 계좌 잔액
      */
-    public String getBalance() {
+    public double getBalance() {
         return balance;
     }
 

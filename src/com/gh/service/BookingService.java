@@ -1,6 +1,7 @@
 package com.gh.service;
 
 import com.gh.model.Booking;
+import com.gh.user.Customer;
 
 /**
  * 예약(Booking)에 대한 등록, 수정, 삭제 기능을 정의하는 서비스 인터페이스입니다.
@@ -27,5 +28,5 @@ public interface BookingService {
      *
      * @param b 수정할 예약 객체. bookingId를 포함해야 하며, 해당 ID의 예약이 존재해야 합니다.
      */
-	void updateBooking(Booking b);
+	void updateBooking(Customer c, Booking b);
 }
