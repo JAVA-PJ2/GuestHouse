@@ -23,6 +23,8 @@ public class Booking {
 	private int numberOfPeople;
 	/** 예약된 게스트하우스 정보 */
 	private Guesthouse guesthouse;
+	/** 예약 취소 여부 */
+	private boolean isCancled;
 	
 	/**
 	 * 기본 생성자입니다.
@@ -165,6 +167,24 @@ public class Booking {
      */
 	public void setBookingId(String bookingId) {
 		this.bookingId = bookingId;
+	}
+	
+	/**
+	 * 예약이 취소되었는지 여부를 설정합니다.
+	 * 
+	 * @param b 예약 취소 여부
+	 */
+	public void setIsCancled(boolean b) {
+		this.isCancled = b;
+	}
+	
+	/**
+	 * 예약이 취소되었는지 여부를 반환합니다.
+	 * 
+	 * @return 예약 취소 여부
+	 */
+	public boolean getIsCancled() {
+		return isCancled;
 	}
 
 	/**
