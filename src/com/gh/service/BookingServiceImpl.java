@@ -1,5 +1,6 @@
 package com.gh.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,26 +158,42 @@ public class BookingServiceImpl implements BookingService {
 	    }
 	}
 
-//	@Override
+	@Override
 	/**
-	 * 숙소의 모든 예약 조회
+	 * 예약 조회
+	 * 
+	 * <p>bookingId로 예약 조회</p>
+	 */
+	public Booking findBooking(int bookingId) {
+		Booking find = null;
+		for (Booking b : bookings) {
+			if(b.getBookingId().hashCode() == bookingId) {
+				find = b;
+			} else {
+				System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
+			}
+		}
+		return find;
+	}
+	
+	@Override
+	/**
+	 * 수용 가능 인원이 full인지 파악해서 참/거짓 출력
 	 * 
 	 * <p>
-	 * 	예약 번호로 고객명, 숙소명, 체크인/체크아웃 날짜, 총 결제 금액 등 반환
-	 * 	숙소 타입 별로 추가 정보를 반환
+	 * 	canBook 활용해서 참/거짓 반환
 	 * </p>
 	 */
-//	public Booking findBooking(int bookingId) {
-//		Booking find = null;
-//		for (Booking b : bookings) {
-//			if(b.getBookingId().hashCode() == bookingId) {
-//				find = b;
-//			} else {
-//				System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
-//			}
-//		}
-//		return find;
-//	}
+	public boolean canAccomodate(LocalDate date, int numPeople) {
+		List<Guesthouse> guesthouses = new ArrayList<>();
+		for (Guesthouse gh : guesthouses) {
+			int current = gh.getDailyPeople().getOrDefault(date, 0);
+			if (current + numPeople > gh.getMaxPeople()) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	@Override 
 	/**
