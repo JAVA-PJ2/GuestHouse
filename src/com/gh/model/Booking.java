@@ -3,6 +3,8 @@ package com.gh.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.gh.user.Customer;
+
 /**
  * 게스트하우스 예약 정보를 담는 클래스입니다.
  * 예약 ID, 시작일, 종료일, 숙박일수, 인원 수, 숙소 정보(Has a)를 포함합니다.
@@ -197,6 +199,21 @@ public class Booking {
 		return "Booking [bookingId=" + bookingId + ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", bookingDays=" + bookingDays + ", numberOfPeople=" + numberOfPeople + ", guesthouse=" + guesthouse
 				+ "]";
+	}
+
+	public void setTotalAmount(double totalPrice) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Customer getCustomer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public double getTotalAmount() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }
