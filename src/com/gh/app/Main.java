@@ -52,12 +52,13 @@ public class Main {
 
 		// CRUD 메뉴
 		while (true) {
-			System.out.println("\n===== 게스트하우스 예약 시스템 =====");
+			System.out.printf("\n===== %s 님의 게스트하우스 예약 시스템 =====\n", customer.getName());
 			System.out.println("고객: " + customer.getName() + " | 잔액: " + customer.getAccount().getBalance());
 			System.out.println("1. 예약하기");
 			System.out.println("2. 예약 변경하기");
 			System.out.println("3. 예약 취소하기");
-			System.out.println("4. 종료");
+			System.out.println("4. 이 고객의 모든 예약 조회하기");
+			System.out.println("5. 종료");
 			System.out.print("번호를 선택하세요: ");
 
 			int choice = Integer.parseInt(sc.nextLine());
@@ -84,8 +85,8 @@ public class Main {
 				int people = Integer.parseInt(sc.nextLine());
 
 				Booking newBooking = new Booking(startDate, days, people, selectedGH);
-				customer.getBookings().add(newBooking);
-				service.addBooking(newBooking);
+//				customer.getBookings().add(newBooking);
+				service.addBooking(customer, newBooking);
 				break;
 
 			case 2:
@@ -135,10 +136,16 @@ public class Main {
 			case 3: // ID 찾기 어려우니까 위처럼 목록을 보여주고 번호를 선택해서 삭제하는게 좋을 것 같아요
 				System.out.print("취소할 예약 ID 입력: ");
 				String deleteId = sc.nextLine();
-				service.deleteBooking(deleteId);
+				service.deleteBooking(customer, deleteId);
 				break;
-
+				
 			case 4:
+				// 해당 고객의 모든 예약 조회
+				for(Booking b: service.findBooking(customer)) {
+					System.out.println("- " + b.toString());
+				}
+
+			case 5:
 				System.out.println("프로그램을 종료합니다.");
 				System.exit(0);
 

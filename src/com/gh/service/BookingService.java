@@ -18,14 +18,14 @@ public interface BookingService {
      *
      * @param b 추가할 예약 객체 (Booking)
      */
-	void addBooking(Booking b);
+	void addBooking(Customer c, Booking b);
 	
 	 /**
      * 예약 ID를 기반으로 기존 예약을 삭제합니다.
      *
      * @param bookingId 삭제할 예약의 고유 식별자
      */
-	void deleteBooking(String bookingId);
+	void deleteBooking(Customer c, String bookingId);
 	
 	/**
      * 기존 예약 정보를 수정합니다.

@@ -27,15 +27,15 @@ public class BookingServiceImpl implements BookingService {
 	/**
 	 * 예약
 	 */
-	public void addBooking(Booking b) {
+	public void addBooking(Customer c, Booking b) {
 		if (b == null) {
 			System.out.println("예약 정보가 유효하지 않습니다.");
 			return;
 		}
 
-		Customer customer = b.getCustomer(); // 예약을 한 고객 객체 가져오기
+//		Customer customer = b.getCustomer(); // 예약을 한 고객 객체 가져오기
 		Guesthouse gh = b.getGuesthouse(); // 예약 대상인 게스트하우스 객체 가져오기
-		Account account = customer.getAccount(); // 고객의 계좌 객체 가져오기
+		Account account = c.getAccount(); // 고객의 계좌 객체 가져오기
 
 		int people = b.getNumberOfPeople(); // 예약 인원 수
 		int days = b.getBookingDays(); // 예약 일수
@@ -71,14 +71,14 @@ public class BookingServiceImpl implements BookingService {
 		b.setBookingId(bookingId);
 
 		bookings.add(b);
-		customer.getBookings().add(b);
+		c.getBookings().add(b);
 
 		System.out.println("예약이 완료되었습니다. 예약 번호: " + bookingId);
 		System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
 
 	}
 
-	public void deleteBooking(String bookingId) {
+	public void deleteBooking(Customer c, String bookingId) {
 		Booking target = null;
 
 		// 예약 ID로 예약 찾기
@@ -111,14 +111,13 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		// 고객, 게스트하우스, 계좌 정보 불러오기
-		Customer customer = target.getCustomer();
 		Guesthouse gh = target.getGuesthouse();
-		Account account = customer.getAccount();
+		Account account = c.getAccount();
 
 		// 예약 정보로 환불 금액 계산
 		int people = target.getNumberOfPeople();
 		int days = target.getBookingDays();
-		double refundAmount = target.getTotalAmount() * 0.5; // 50% 환불
+		double refundAmount =  people * days * target.getGuesthouse().getPricePerDays() * 0.5; // 50% 환불
 
 		// 환불 처리
 		account.setBalance(account.getBalance() + refundAmount); // 계좌에 환불 금액 입금
