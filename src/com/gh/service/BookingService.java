@@ -1,6 +1,10 @@
 package com.gh.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.gh.model.Booking;
+import com.gh.model.Guesthouse;
 import com.gh.user.Customer;
 
 /**
@@ -29,4 +33,33 @@ public interface BookingService {
      * @param b 수정할 예약 객체. bookingId를 포함해야 하며, 해당 ID의 예약이 존재해야 합니다.
      */
 	void updateBooking(Customer c, Booking b);
+	
+	/**
+	 * 예약 조회
+	 * 
+	 * @param booginId
+	 */
+	Booking findBooking(int bookingId);
+
+	/**
+	 * 해당 고객의 예약 정보 조회합니다.
+	 * 
+	 * @param cs
+	 */
+	List<Booking> findBooking(Customer cs);
+
+	/**
+	 * 숙소의 모든 예약 조회합니다.
+	 * 
+	 * @param gh
+	 */
+	List<Booking> findBookingByGHName(Guesthouse gh);
+
+	/**
+	 * 수용 가능 인원이 full인지 파악하는 메소드 구현합니다.
+	 * 
+	 * @param date
+	 * @param numberOfPoeple
+	 */
+	boolean canAccomodate(LocalDate date, int numberOfPoeple);
 }

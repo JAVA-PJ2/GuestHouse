@@ -1,7 +1,9 @@
 package com.gh.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
@@ -14,40 +16,120 @@ public class BookingServiceImpl implements BookingService {
 	private final List<Booking> bookings = new ArrayList<>();
 
 	private BookingServiceImpl() {
-	    
+
 	}
 
 	public static BookingServiceImpl getInstance() {
-	    return service;
+		return service;
 	}
-
 
 	@Override
 	/**
 	 * 예약
 	 */
 	public void addBooking(Booking b) {
+		if (b == null) {
+			System.out.println("예약 정보가 유효하지 않습니다.");
+			return;
+		}
+
+		Customer customer = b.getCustomer(); // 예약을 한 고객 객체 가져오기
+		Guesthouse gh = b.getGuesthouse(); // 예약 대상인 게스트하우스 객체 가져오기
+		Account account = customer.getAccount(); // 고객의 계좌 객체 가져오기
+
+		int people = b.getNumberOfPeople(); // 예약 인원 수
+		int days = b.getBookingDays(); // 예약 일수
+		LocalDate startDate = b.getStartDate(); // 체크인 날짜
+		LocalDate endDate = startDate.plusDays(days); // 체크아웃 날짜 계산
+		b.setEndDate(endDate); // 예약 객체에 체크아웃 날짜설정
+
+		double pricePerDay = gh.getPricePerDays(); // 1박당 가격
+		double totalPrice = pricePerDay * days * people; // 총 결제 금액 계산
+		b.setTotalAmount(totalPrice); // 예약 객체에 총 결제 금액 설정
+
+		// 예약 가능 여부 확인(해당 날짜에 인원 수용 가능한지)
+		boolean canBook = gh.canBook(startDate, endDate, people);
+
+		if (!canBook) {
+			System.out.println("예약 불가: 해당 날짜의 최대 수용 인원을 초과합니다.");
+			return;
+		}
+
+		// 잔액 확인
+		if (account.getBalance() < totalPrice) {
+			System.out.println("잔액 부족으로 예약할 수 없습니다. 필요 금액: " + totalPrice + ", 현재 잔액: " + account.getBalance());
+			return;
+		}
+
+		// 결제 및 예약 처리
+		account.setBalance(account.getBalance() - totalPrice);
+		gh.setTotalSales(gh.getTotalSales() + totalPrice);
+		gh.addPeople(startDate, endDate, people);
+
+		// 예약 ID 설정 및 저장
+		String bookingId = UUID.randomUUID().toString();
+		b.setBookingId(bookingId);
+
 		bookings.add(b);
-		System.out.println("예약이 성공적으로 추가되었습니다" + b.getBookingId());
+		customer.getBookings().add(b);
+
+		System.out.println("예약이 완료되었습니다. 예약 번호: " + bookingId);
+		System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
+
 	}
 
-	@Override
-	/**
-	 * 예약 취소
-	 */
 	public void deleteBooking(String bookingId) {
-		List<Booking> toRemove = new ArrayList<>();
+		Booking target = null;
+
+		// 예약 ID로 예약 찾기
 		for (Booking b : bookings) {
 			if (b.getBookingId().equals(bookingId)) {
-				toRemove.add(b);
+				target = b;
+				break;
 			}
 		}
-		if (!toRemove.isEmpty()) {
-			bookings.removeAll(toRemove);
-			System.out.println("예약이 삭제 되었습니다" + bookingId);
-		} else {
-			System.out.println("해당 예약 ID를 찾을 수 없습니다" + bookingId);
+
+		// 예약이 없으면 종료
+		if (target == null) {
+			System.out.println("해당 예약을 찾을 수 없습니다.");
+			return;
 		}
+
+		// 이미 취소된 예약이면 메시지 출력 후 종료
+		if (target.getIsCancled()) {
+			System.out.println("이미 취소된 예약입니다.");
+			return;
+		}
+
+		// 취소 가능 날짜인지 확인 (체크인 3일 전까지 가능)
+		LocalDate today = LocalDate.now();
+		LocalDate checkIn = target.getStartDate();
+
+		if (!today.isBefore(checkIn.minusDays(2))) {
+			System.out.println("체크인 3일 전까지만 예약 취소가 가능합니다.");
+			return;
+		}
+
+		// 고객, 게스트하우스, 계좌 정보 불러오기
+		Customer customer = target.getCustomer();
+		Guesthouse gh = target.getGuesthouse();
+		Account account = customer.getAccount();
+
+		// 예약 정보로 환불 금액 계산
+		int people = target.getNumberOfPeople();
+		int days = target.getBookingDays();
+		double refundAmount = target.getTotalAmount() * 0.5; // 50% 환불
+
+		// 환불 처리
+		account.setBalance(account.getBalance() + refundAmount); // 계좌에 환불 금액 입금
+		gh.setTotalSales(gh.getTotalSales() - refundAmount); // 게스트하우스 매출 차감
+		gh.removePeople(target.getStartDate(), target.getEndDate(), people); // 예약 인원 감소
+
+		target.setIsCancled(true); // 예약 상태를 취소됨으로 표시
+
+		// 성공 메시지 출력
+		System.out.println("예약이 성공적으로 취소되었습니다. 환불 금액: " + refundAmount);
+		System.out.println("현재 잔액: " + account.getBalance() + ", 게스트하우스 총 매출: " + gh.getTotalSales());
 	}
 
 	/**
@@ -55,26 +137,26 @@ public class BookingServiceImpl implements BookingService {
 	 */
 	@Override
 	public void updateBooking(Customer c, Booking b) {
-		
+
 		// 1. 고객이 이 예약을 실제로 가지고 있는지 확인
 		// 수정하려는 booking의 정보가 고객이 가지고 있는 예약이 맞다면 진행
 		boolean bookingExists = false;
-		
-		for(Booking booking: c.getBookings()) {
-			if(booking.getBookingId().equals(b.getBookingId())) {
+
+		for (Booking booking : c.getBookings()) {
+			if (booking.getBookingId().equals(b.getBookingId())) {
 				bookingExists = true;
 				break;
 			}
 		}
-		
-		if(!bookingExists) {
+
+		if (!bookingExists) {
 			System.out.println("고객의 예약 정보가 없습니다.");
 			return;
 		}
-		
+
 		// 2. 예약이 취소되었는지 확인
 		// 취소된 예약인지 여부 검증
-	    if (b.getIsCancled()) {
+    if (b.getIsCancled()) {
 	        System.out.println("취소된 예약입니다.");
 	        return;
 	    }
@@ -161,24 +243,60 @@ public class BookingServiceImpl implements BookingService {
 	    }
 	}
 
-//	@Override
+	@Override
 	/**
-	 * 숙소의 모든 예약 조회
+	 * 예약 조회
 	 * 
 	 * <p>
-	 * 	예약 번호로 고객명, 숙소명, 체크인/체크아웃 날짜, 총 결제 금액 등 반환
-	 * 	숙소 타입 별로 추가 정보를 반환
+	 * bookingId로 예약 조회
 	 * </p>
 	 */
-//	public Booking findBooking(int bookingId) {
-//		Booking find = null;
-//		for (Booking b : bookings) {
-//			if(b.getBookingId().hashCode() == bookingId) {
-//				find = b;
-//			} else {
-//				System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
-//			}
-//		}
-//		return find;
-//	}
+	public Booking findBooking(int bookingId) {
+		Booking find = null;
+		for (Booking b : bookings) {
+			if (b.getBookingId().hashCode() == bookingId) {
+				find = b;
+			} else {
+				System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
+			}
+		}
+		return find;
+	}
+
+	@Override
+	/**
+	 * 수용 가능 인원이 full인지 파악해서 참/거짓 출력
+	 * 
+	 * <p>
+	 * canBook 활용해서 참/거짓 반환
+	 * </p>
+	 */
+	public boolean canAccomodate(LocalDate date, int numPeople) {
+		List<Guesthouse> guesthouses = new ArrayList<>();
+		for (Guesthouse gh : guesthouses) {
+			int current = gh.getDailyPeople().getOrDefault(date, 0);
+			if (current + numPeople > gh.getMaxPeople()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	/**
+	 * 해당 고객의 모든 예약 조회
+	 * 
+	 * <p>
+	 * 고객명은 제외하고 출력
+	 * </p>
+	 */
+	public List<Booking> findBooking(Customer cs) {
+		return cs.getBookings();
+	}
+
+	@Override
+	public List<Booking> findBookingByGHName(Guesthouse gh) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
