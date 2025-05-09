@@ -262,6 +262,34 @@ public class BookingServiceImpl implements BookingService {
 		}
 		return find;
 	}
+	
+	@Override
+	/**
+	 * 숙소의 모든 예약 조회
+	 * 
+	 * <p>
+	 * 	게하 이름을 찾아서 숙소의 모든 예약 조회를 합니다.
+	 * </p>
+	 */
+	public List<Booking> findBookingByGHName(Guesthouse gh) {
+		List<Booking> find = new ArrayList<>();
+		
+		for (Booking b : bookings) {
+			if (b.getGuesthouse() != null && b.getGuesthouse().getBookingId().equals(gh.getBookingId())) {
+				find.add(b);
+			}
+		}
+		
+		if (find.isEmpty()) {
+			System.out.println(gh.getName() + " 해당 숙소의 예약 정보가 없습니다. ");
+		} else {
+			for (Booking b : find) {
+				b.toString();
+			}
+		}
+		
+		return find;
+	}
 
 	@Override
 	/**
