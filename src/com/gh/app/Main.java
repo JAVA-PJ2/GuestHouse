@@ -133,11 +133,47 @@ public class Main {
 			    service.updateBooking(customer, modified);
 			    break;
 
-			case 3: // ID 찾기 어려우니까 위처럼 목록을 보여주고 번호를 선택해서 삭제하는게 좋을 것 같아요
-				System.out.print("취소할 예약 ID 입력: ");
-				String deleteId = sc.nextLine();
-				service.deleteBooking(customer, deleteId);
-				break;
+			case 3: // 예약 취소
+			    List<Booking> cancelList = customer.getBookings();
+
+			    if (cancelList.isEmpty()) {
+			        System.out.println("예약 내역이 없습니다.");
+			        break;
+			    }
+
+			    System.out.println("[예약 취소] 고객의 예약 목록:");
+			    for (int i = 0; i < cancelList.size(); i++) {
+			        Booking b = cancelList.get(i);
+			        System.out.printf("%d. [%s] %s ~ %s (%d명)\n",
+			                i + 1,
+			                b.getGuesthouse().getName(),
+			                b.getStartDate(),
+			                b.getEndDate(),
+			                b.getNumberOfPeople());
+			    }
+
+			    System.out.print("취소할 예약 번호를 선택하세요: ");
+			    int cancelIndex = Integer.parseInt(sc.nextLine()) - 1;
+
+			    if (cancelIndex < 0 || cancelIndex >= cancelList.size()) {
+			        System.out.println("잘못된 번호입니다.");
+			        break;
+			    }
+
+			    Booking toCancel = cancelList.get(cancelIndex);
+
+			    System.out.print("정말 예약을 취소하시겠습니까? (Y/N): ");
+			    String confirm = sc.nextLine().trim().toUpperCase();
+
+			    if (confirm.equals("Y")) {
+			        service.deleteBooking(customer, toCancel.getBookingId());
+			        cancelList.remove(cancelIndex);
+			        System.out.println("예약이 성공적으로 취소되었습니다.");
+			    } else {
+			        System.out.println("예약 취소가 취소되었습니다.");
+			    }
+			    break;
+
 				
 			case 4:
 				// 해당 고객의 모든 예약 조회
