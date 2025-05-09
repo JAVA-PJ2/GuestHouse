@@ -322,9 +322,4 @@ public class BookingServiceImpl implements BookingService {
 		return cs.getBookings();
 	}
 
-	@Override
-	public List<Booking> findBookingByGHName(Guesthouse gh) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
