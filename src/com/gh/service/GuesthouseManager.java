@@ -69,8 +69,14 @@ public class GuesthouseManager {
      * @param feature
      * @return
      */
-    public boolean hasFeature(Guesthouse gh, String feature) {
-    	return gh.hasFeature(feature);
+    public boolean hasFeature(List<Guesthouse> gh, String feature) {
+    	boolean found = false;
+        for (Guesthouse g : gh) {
+            if (g.getType().equalsIgnoreCase(feature)) {
+                System.out.println("- " + g.getName() + " (" + g.getType() + ")");
+                found = true;
+            }
+        }
+        return found;
     }
-
 }

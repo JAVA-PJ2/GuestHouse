@@ -70,7 +70,8 @@ public class Main {
 			System.out.println("4. 이 고객의 모든 예약 조회하기");
 			System.out.println("5. 추천 숙소 리스트");
 			System.out.println("6. 특정 날짜의 전체 예약률 확인");
-			System.out.println("7. 종료");
+			System.out.println("7. 특정 특성의 게스트하우스 보기");
+			System.out.println("8. 종료");
 			System.out.print("번호를 선택하세요: ");
 
 			int choice = Integer.parseInt(sc.nextLine());
@@ -249,6 +250,16 @@ public class Main {
 				break;
 
 			case 7:
+				System.out.println("검색할 게스트하우스 유형(예: Music, Pet, Party 등)을 입력하세요:");
+				String typeToSearch = sc.nextLine();
+
+				boolean found = manager.hasFeature(gh, typeToSearch);
+				if (!found) {
+				    System.out.println("해당 유형의 게스트하우스가 존재하지 않습니다.");
+				}
+				break;
+				
+			case 8:
 				System.out.println("프로그램을 종료합니다.");
 				System.exit(0);
 
