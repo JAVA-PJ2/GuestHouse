@@ -17,10 +17,14 @@ import com.gh.user.Customer;
 public class BookingServiceImpl implements BookingService {
 	private static final BookingServiceImpl service = new BookingServiceImpl();
 	private static final GuesthouseManager guesthouseManager = new GuesthouseManager();
-	
+
 	private final List<Booking> bookings = new ArrayList<>();
 	private final List<Guesthouse> guestHouses = new ArrayList<>();
 
+	public List<Booking> getBookings() {
+		return bookings;
+	}
+	
 	private BookingServiceImpl() {
 	}
 
@@ -32,11 +36,11 @@ public class BookingServiceImpl implements BookingService {
 	/**
 	 * 예약
 	 */
-	 public void addBooking(Customer c, Booking b) {
-        if (b == null) {
-            System.out.println("예약 정보가 유효하지 않습니다.");
-            return;
-        }
+	public void addBooking(Customer c, Booking b) {
+		if (b == null) {
+			System.out.println("예약 정보가 유효하지 않습니다.");
+			return;
+		}
 
 		Guesthouse gh = b.getGuesthouse(); // 예약 대상인 게스트하우스 객체 가져오기
 		Account account = c.getAccount(); // 고객의 계좌 객체 가져오기
@@ -86,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
 
 		System.out.println("예약이 완료되었습니다. 예약 번호: " + bookingId);
 		System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
-
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	public void deleteBooking(Customer c, String bookingId) throws BookingCancelledException {
@@ -140,6 +144,7 @@ public class BookingServiceImpl implements BookingService {
 		System.out.println("현재 잔액: " + account.getBalance() + ", 게스트하우스 총 매출: " + gh.getTotalSales());
 
 		processWaitingList(); // 예약이 취소되었으니 대기열 자동 예약 시도
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	/**
@@ -252,6 +257,8 @@ public class BookingServiceImpl implements BookingService {
 			System.out.println("예약 변경 실패: 최대 수용 인원 초과");
 
 		}
+		
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	@Override
@@ -337,9 +344,9 @@ public class BookingServiceImpl implements BookingService {
 	 * 가중치 기반 추천 숙소 리스트 반환
 	 */
 	public List<Guesthouse> getRecommendedByGH(Customer customer) {
-        // GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
-        return guesthouseManager.getRecommendedByGH(guestHouses, customer);
-    }
+		// GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
+		return guesthouseManager.getRecommendedByGH(guestHouses, customer);
+	}
 
 	/////////// 우선순위큐 예약 대기열 구현 ///////////////
 
@@ -365,7 +372,6 @@ public class BookingServiceImpl implements BookingService {
 					+ booking.getNumberOfPeople() + "]";
 		}
 	}
-	
 
 	// 예약 날짜, 시간을 기준으로 정렬
 	private final PriorityQueue<WaitingRequest> waitingList = new PriorityQueue<>(
@@ -429,6 +435,6 @@ public class BookingServiceImpl implements BookingService {
 		if (!hasBooked) {
 			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
 		}
-		
+
 	}
 }

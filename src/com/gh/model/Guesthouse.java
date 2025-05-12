@@ -11,7 +11,7 @@ import com.gh.service.BookingServiceImpl;
  * 인원, 설명정보를 포함합니다.
  */
 public class Guesthouse {
-	private String bookingId; // 예약 고유번호
+	private String bookingId; // 예약 고유번호//???
 	private String name; // 게스트하우스 이름
 	private String type; // 게스트하우스 유형
 	private double pricePerDays; // 1박당 가격

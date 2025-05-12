@@ -11,6 +11,7 @@ import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
 import com.gh.model.PartyGH;
 import com.gh.model.PetGH;
+import com.gh.service.BookingFileManager;
 import com.gh.service.BookingServiceImpl;
 import com.gh.service.GuesthouseManager;
 import com.gh.user.Account;
@@ -26,11 +27,11 @@ public class Main {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));
-		gh.add(new PetGH("GH002", "펫팰리스 도그하우스", "반려견", 80.0, 3, 0, "중형견 전용, 응급대응 지원", 30.0, null, true));
-		gh.add(new PetGH("GH003", "펫팰리스 캣하우스", "반려묘", 75.0, 2, 0, "고양이 전용, 조용한 실내", 25.0, null, false));
+		gh.add(new PetGH("GH002", "펫팰리스 도그하우스", "반려동물", 80.0, 3, 0, "중형견 전용, 응급대응 지원", 30.0, null, true));
+		gh.add(new PetGH("GH003", "펫팰리스 캣하우스", "반려동물", 75.0, 2, 0, "고양이 전용, 조용한 실내", 25.0, null, false));
 		gh.add(new PartyGH("GH004", LocalDate.now(), LocalDate.now().plusDays(1), 1, 1, null, "파티존 루프탑", "파티", 150.0,
 				10, 0, "루프탑 파티 공간, DJ 부스 완비", 19));
-		gh.add(new Guesthouse("GH005", "일반 게스트하우스", "일반", 50.0, 4, 0, "저렴하고 깨끗한 일반 숙소"));
+		gh.add(new Guesthouse("GH005", "일반 게스트하우스", "파티", 50.0, 4, 0, "저렴하고 깨끗한 일반 숙소"));
 
 		// 고객 생성
 		List<Customer> customers = new ArrayList<>();
@@ -53,6 +54,9 @@ public class Main {
 			if (customer == null)
 				System.out.println("등록되지 않은 고객입니다. 다시 입력하세요.\n");
 		}
+		
+		// 저장된 예약 내역 불러오기
+		BookingFileManager.loadBookings(customer, gh);
 
 		// CRUD 메뉴
 		while (true) {
