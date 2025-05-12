@@ -3,6 +3,8 @@ package com.gh.model;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import com.gh.user.Customer;
+import com.gh.service.BookingServiceImpl;
 
 /**
  * Guesthouse 클래스는 게스트하우스의 정보를 담는 엔티티 클래스입니다. 예약 ID, 이름, 타입, 가격, 최대 수용 인원, 현재
@@ -198,6 +200,23 @@ public class Guesthouse {
 			date = date.plusDays(1);
 		}
 		return true;
+	}
+	
+	/**
+	 * 해당 게스트하우스에 대한 예약 수를 계산
+	 * 
+	 * @return count
+	 */
+	public long getBookingCount(Customer cs) {
+		// 예약 시스템의 booking 리스트에서 해당 게스트하우스를 기준으로 예약 계산
+		long count = 0;
+		// findBooking을 통해 해당 고객의 예약 리스트를 가져옴
+        for (Booking b : BookingServiceImpl.getInstance().findBooking(cs)) {
+            if (b.getGuesthouse().equals(this)) {
+                count++;
+            }
+        }
+		return count;
 	}
 
 	// 필요 시 외부 접근용 getter

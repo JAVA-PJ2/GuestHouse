@@ -13,7 +13,8 @@ import com.gh.user.Customer;
 
 public class BookingServiceImpl implements BookingService {
 	private static final BookingServiceImpl service = new BookingServiceImpl();
-
+	private static final GuesthouseManager guesthouseManager = new GuesthouseManager();
+	
 	private final List<Booking> bookings = new ArrayList<>();
 	private final List<Guesthouse> guestHouses = new ArrayList<>();
 
@@ -326,26 +327,7 @@ public class BookingServiceImpl implements BookingService {
 	 * 가중치 기반 추천 숙소 리스트 반환
 	 */
 	public List<Guesthouse> getRecommendedByGH(Customer customer) {
-		// guestHouses 리스트를 스트림으로 변환하여 정렬 및 추천 대상 선정
-		return guestHouses.stream()
-		        // guesthouse를 비교하여 정렬하는 로직 정의 (내림차순 정렬)
-		        .sorted((g1, g2) -> {
-		            // g1에 대한 예약 횟수 계산
-		        	// g2에 대한 예약 횟수 계산
-		            long bookings1 = bookings.stream().filter(b -> b.getGuesthouse().equals(g1)).count();
-		            long bookings2 = bookings.stream().filter(b -> b.getGuesthouse().equals(g2)).count();
-
-		            // g1, g2의 계산: 
-		            // 총 매출의 40% + 예약 수의 60%
-		            double result1 = g1.getTotalSales() * 0.4 + bookings1 * 0.6;
-		            double result2 = g2.getTotalSales() * 0.4 + bookings2 * 0.6;
-
-		            // 계산 기준으로 내림차순 정렬 (높은 결과가 우선)
-		            return Double.compare(result2, result1);
-		        })
-		        // 상위 5개의 게스트하우스만 선택
-		        .limit(5)
-		        // 결과를 리스트로 수집
-		        .collect(Collectors.toList());
-	}
+        // GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
+        return guesthouseManager.getRecommendedByGH(guestHouses, customer);
+    }
 }
