@@ -173,6 +173,7 @@ public class Main {
 				break;
 
 			case 5:
+<<<<<<< Updated upstream
 				List<Guesthouse> recommended = service.getRecommendedByGH(customer);
 			    if (recommended.isEmpty()) {
 			        System.out.println("추천할 숙소가 없습니다.");
@@ -183,6 +184,17 @@ public class Main {
 			    }
 			    break;
 
+=======
+				List<Guesthouse> recommended = service.getRecommendedByGH(gh, customer);
+				if (recommended.isEmpty()) {
+					System.out.println("추천할 숙소가 없습니다.");
+				} else {
+					for (Guesthouse g : recommended) {
+						System.out.println(g.getName());
+					}
+				}
+				break;
+>>>>>>> Stashed changes
 			case 6:
 				System.out.println("프로그램을 종료합니다.");
 				System.exit(0);
