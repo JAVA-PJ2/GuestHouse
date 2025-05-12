@@ -86,8 +86,20 @@ public class Main {
 				int ghChoice = Integer.parseInt(sc.nextLine()) - 1;
 				Guesthouse selectedGH = gh.get(ghChoice);
 
-				System.out.print("시작 날짜 입력 (yyyy-mm-dd): ");
-				LocalDate startDate = LocalDate.parse(sc.nextLine());
+				LocalDate startDate = null;
+				while (startDate == null) {
+					System.out.print("시작 날짜 입력 (yyyy-MM-dd): ");
+					String input = sc.nextLine().trim();
+					try {
+						startDate = LocalDate.parse(input);
+						if (startDate.isBefore(LocalDate.now())) {
+							System.out.println("[오류] 현재 날짜 이후만 예약 가능합니다.");
+							startDate = null;
+						}
+					} catch (Exception e) {
+						System.out.println("[오류] 날짜 형식이 올바르지 않습니다. 예: 2025-05-12");
+					}
+				}
 
 				System.out.print("숙박일수 입력: ");
 				int days = Integer.parseInt(sc.nextLine());
