@@ -30,7 +30,7 @@ public class Main {
 
 		// 고객 생성
 		List<Customer> customers = new ArrayList<>();
-		customers.add(new Customer("홍길동", "hong@naver.com", new Account("hong123", 1000.0), new ArrayList<>()));
+		customers.add(new Customer("홍길동", "hong@naver.com", new Account("hong123", 10000000.0), new ArrayList<>()));
 		customers.add(new Customer("김철수", "kim@naver.com", new Account("kim123", 800.0), new ArrayList<>()));
 		customers.add(new Customer("이영희", "lee@naver.com", new Account("lee123", 1200.0), new ArrayList<>()));
 
@@ -160,7 +160,6 @@ public class Main {
 				if (confirm.equals("Y")) {
 					service.deleteBooking(customer, toCancel.getBookingId());
 					cancelList.remove(cancelIndex);
-					System.out.println("예약이 성공적으로 취소되었습니다.");
 				} else {
 					System.out.println("예약 취소가 취소되었습니다.");
 				}
