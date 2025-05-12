@@ -409,6 +409,7 @@ public class BookingServiceImpl implements BookingService {
 		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.
 		// 취소해서 최대 수용 인원 - 현재 수용 인원으로 빈자리가 발생했을 경우, 우선순위큐의 대기열에 우선순위가 높은 예약부터 빈자리에 자동
 		// 예약이 된다.
+		//
 		// 만약, 빈자리가 1개인데, 우선순위가 1순위가 2명, 2순위가 1명일 경우 2순위가 자동으로 예약된다.
 		// 이 메소드에서 addBooking 메소드를 호출해서 메소드 재사용하고 코드 길이를 줄이는게 좋을 것 같다.
 
@@ -449,6 +450,7 @@ public class BookingServiceImpl implements BookingService {
 		if (!hasBooked) {
 			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
 		}
+		
 	}
 
 }
