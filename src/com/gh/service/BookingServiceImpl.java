@@ -344,9 +344,9 @@ public class BookingServiceImpl implements BookingService {
 	/**
 	 * 가중치 기반 추천 숙소 리스트 반환
 	 */
-	public List<Guesthouse> getRecommendedByGH(Customer customer) {
+	public List<Guesthouse> getRecommendedByGH(List<Guesthouse> gh, Customer customer) {
 		// GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
-		return guesthouseManager.getRecommendedByGH(guestHouses, customer);
+		return guesthouseManager.getRecommendedByGH(gh, customer);
 	}
 
 	/////////// 우선순위큐 예약 대기열 구현 ///////////////

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.gh.exception.BookingCancelledException;
+import com.gh.exception.BookingNotFoundException;
 import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
@@ -23,7 +24,7 @@ public class Main {
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
 	private static final GuesthouseManager manager = new GuesthouseManager();
 
-	public static void main(String[] args) throws InsufficientBalanceException {
+	public static void main(String[] args) throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));

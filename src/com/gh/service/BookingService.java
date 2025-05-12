@@ -87,7 +87,7 @@ public interface BookingService {
 	 * @param customer 추천 기준이 되는 고객 정보
 	 * @return 추천 숙소 이름(String)의 리스트 (최대 5개)
 	 */
-	List<Guesthouse> getRecommendedByGH(Customer customer);
+	List<Guesthouse> getRecommendedByGH(List<Guesthouse> gh, Customer customer);
 
 	/**
 	 * 예약이 불가능한 경우, 고객의 예약 요청을 대기열에 우선순위와 함께 추가합니다.

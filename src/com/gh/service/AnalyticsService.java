@@ -18,17 +18,24 @@ public interface AnalyticsService {
 	 * @param discountRate	적욜할 할인율(예 : 0.1은 10%할인)
 	 */
 	void applyPromotion(String name, double discountRate);
+	
 	/**
-	 * 고객 정보를 기반으로 추천 게스트하우스 리스트를 반환합니다.
-	 * @param customer		추천 기준이 되는 고객 정보
-	 * @return				추천된 게스트하우스 목록
+	 * 고객에게 추천할 숙소 이름 목록을 반환합니다.
+	 * 
+	 * <p>
+	 * 총 매출(40%)과 예약 수(60%)의 가중치를 기반으로 점수를 계산하여 전체 게스트하우스 중 상위 5개를 선정하고, 숙소 이름만
+	 * 반환합니다.
+	 * </p>
+	 *
+	 * @param customer 추천 기준이 되는 고객 정보
+	 * @return 추천 숙소 이름(String)의 리스트 (최대 5개)
 	 */
-	List<Guesthouse> getRecommendedByGH(Customer customer);
+	List<Guesthouse> getRecommendedByGH(List<Guesthouse> gh, Customer customer);
+	
 	/**
 	 * 특정 날짜의 예약률을 계산하여 반환합니다.
 	 * @param date			예약률을 계산할 날짜
 	 * @return				에약률
 	 */
 	double calcReservationRate(LocalDate date);
-
 }
