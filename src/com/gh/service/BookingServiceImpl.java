@@ -152,7 +152,8 @@ public class BookingServiceImpl implements BookingService {
 
 	/**
 	 * 예약 변경
-	 * @throws BookingCancelledException 
+	 * 
+	 * @throws BookingCancelledException
 	 */
 	@Override
 	public void updateBooking(Customer c, Booking b) throws InsufficientBalanceException, BookingCancelledException {
@@ -277,7 +278,7 @@ public class BookingServiceImpl implements BookingService {
 				return b;
 			}
 		}
-		throw new BookingCancelledException (bookingId + " 예약 정보를 찾을 수 없습니다.");
+		throw new BookingCancelledException(bookingId + " 예약 정보를 찾을 수 없습니다.");
 
 	}
 

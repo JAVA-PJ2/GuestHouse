@@ -51,26 +51,15 @@ public class GuesthouseManager {
     }
     
     /**
-     * 특정 날짜의 전체 예약률을 계산합니다.
-     * 
-     * @param guesthouses 예약 대상 게스트하우스 목록
-     * @param date 예약률을 계산할 날짜
-     * @return 예약률 (0.0 ~ 100.0)
+     * 특정 날짜에, 특정 게스트하우스의 예약률 계산
      */
-    public double calcReservationRate(List<Guesthouse> guesthouses, LocalDate date) {
-        int totalCapacity = 0;
-        int totalReserved = 0;
+    public double calcReservationRate(Guesthouse guesthouse, LocalDate date) {
+        int capacity = guesthouse.getMaxPeople();
+        int reserved = guesthouse.getDailyPeople().getOrDefault(date, 0);
 
-        for (Guesthouse gh : guesthouses) {
-            totalCapacity += gh.getMaxPeople(); // 해당 게하 최대 수용 인원
+        if (capacity == 0) return 0.0;
 
-            int reserved = gh.getDailyPeople().getOrDefault(date, 0); // 해당 날짜 예약 인원
-            totalReserved += reserved;
-        }
-
-        if (totalCapacity == 0) return 0.0;
-
-        return (double) totalReserved / totalCapacity * 100;
+        return (double) reserved / capacity * 100;
     }
     
     /**

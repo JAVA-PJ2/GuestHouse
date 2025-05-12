@@ -24,7 +24,8 @@ public class Main {
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
 	private static final GuesthouseManager manager = new GuesthouseManager();
 
-	public static void main(String[] args) throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException {
+	public static void main(String[] args)
+			throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));
@@ -207,10 +208,20 @@ public class Main {
 				break;
 
 			case 6:
-				System.out.print("예약률을 확인할 날짜를 입력하세요 (yyyy-mm-dd): ");
+				System.out.println("예약률 확인 가능한 게스트하우스 목록");
+				for (int i = 0; i < gh.size(); i++) {
+					System.out.println((i + 1) + ". " + gh.get(i).getName());
+				}
+
+				System.out.println("예약률을 확인할 게스트하우스 번호: ");
+				int ghIndex = Integer.parseInt(sc.nextLine()) - 1;
+				Guesthouse select = gh.get(ghIndex);
+
+				System.out.println("날짜를 입력하세요(yyyy-mm-dd)");
 				LocalDate checkDate = LocalDate.parse(sc.nextLine());
-				double rate = manager.calcReservationRate(gh, checkDate);
-				System.out.printf("[%s] 전체 예약률: %.2f%%\n", checkDate, rate);
+
+				double rate = manager.calcReservationRate(select, checkDate);
+				System.out.printf("[%s] '%s' 예약률 : %.2f%%\n", checkDate, select.getName(), rate);
 				break;
 
 			case 7:

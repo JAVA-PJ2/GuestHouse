@@ -33,24 +33,26 @@ public interface BookingService {
 	 * @param bookingId 삭제할 예약의 고유 식별자
 	 * @throws BookingCancelledException
 	 * @throws InsufficientBalanceException
-	 * @throws BookingNotFoundException 
+	 * @throws BookingNotFoundException
 	 */
-	void deleteBooking(Customer c, String bookingId) throws BookingCancelledException, InsufficientBalanceException, BookingNotFoundException;
+	void deleteBooking(Customer c, String bookingId)
+			throws BookingCancelledException, InsufficientBalanceException, BookingNotFoundException;
 
 	/**
 	 * 기존 예약 정보를 수정합니다.
 	 *
 	 * @param b 수정할 예약 객체. bookingId를 포함해야 하며, 해당 ID의 예약이 존재해야 합니다.
 	 * @throws InsufficientBalanceException
-	 * @throws BookingCancelledException 
+	 * @throws BookingCancelledException
 	 */
-	void updateBooking(Customer c, Booking b) throws InsufficientBalanceException, BookingCancelledException, BookingCancelledException;
+	void updateBooking(Customer c, Booking b)
+			throws InsufficientBalanceException, BookingCancelledException, BookingCancelledException;
 
 	/**
 	 * 예약 조회
 	 * 
 	 * @param booginId
-	 * @throws BookingCancelledException 
+	 * @throws BookingCancelledException
 	 */
 	Booking findBooking(int bookingId) throws BookingCancelledException, BookingCancelledException;
 
