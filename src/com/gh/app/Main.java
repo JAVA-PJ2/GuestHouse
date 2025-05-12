@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.gh.exception.BookingCancelledException;
+import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
@@ -21,8 +22,7 @@ public class Main {
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
 	private static final GuesthouseManager manager = new GuesthouseManager();
 
-
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InsufficientBalanceException {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));
@@ -91,7 +91,11 @@ public class Main {
 
 				Booking newBooking = new Booking(startDate, days, people, selectedGH);
 //				customer.getBookings().add(newBooking);
-				service.addBooking(customer, newBooking);
+				try {
+					service.addBooking(customer, newBooking);
+				} catch (InsufficientBalanceException e) {
+					System.out.println("[예약 실패]" + e.getMessage());
+				}
 				break;
 
 			case 2:
@@ -131,7 +135,11 @@ public class Main {
 				Booking modified = new Booking(newStart, newDays, newPeople, selected.getGuesthouse());
 				modified.setBookingId(selected.getBookingId());
 
-				service.updateBooking(customer, modified);
+				try {
+					service.updateBooking(customer, modified);
+				} catch (InsufficientBalanceException e) {
+					System.out.println("[예약 변경 실패]" + e.getMessage());
+				}
 				break;
 
 			case 3: // 예약 취소
@@ -163,14 +171,14 @@ public class Main {
 				String confirm = sc.nextLine().trim().toUpperCase();
 
 				if (confirm.equals("Y")) {
-				    try {
-				        service.deleteBooking(customer, toCancel.getBookingId());
-				        cancelList.remove(cancelIndex); // 예외 없을 때만 삭제
-				    } catch (BookingCancelledException e) {
-				        System.out.println("[오류] " + e.getMessage());
-				    }
+					try {
+						service.deleteBooking(customer, toCancel.getBookingId());
+						cancelList.remove(cancelIndex); // 예외 없을 때만 삭제
+					} catch (BookingCancelledException e) {
+						System.out.println("[오류] " + e.getMessage());
+					}
 				} else {
-				    System.out.println("예약 취소가 취소되었습니다.");
+					System.out.println("예약 취소가 취소되었습니다.");
 				}
 
 				break;
@@ -184,14 +192,14 @@ public class Main {
 
 			case 5:
 				List<Guesthouse> recommended = service.getRecommendedByGH(customer);
-			    if (recommended.isEmpty()) {
-			        System.out.println("추천할 숙소가 없습니다.");
-			    } else {
-			        for (Guesthouse g : recommended) {
-			            System.out.println(g.getName());
-			        }
-			    }
-			    break;
+				if (recommended.isEmpty()) {
+					System.out.println("추천할 숙소가 없습니다.");
+				} else {
+					for (Guesthouse g : recommended) {
+						System.out.println(g.getName());
+					}
+				}
+				break;
 			case 6:
 				System.out.print("예약률을 확인할 날짜를 입력하세요 (yyyy-mm-dd): ");
 				LocalDate checkDate = LocalDate.parse(sc.nextLine());
@@ -199,7 +207,6 @@ public class Main {
 				double rate = manager.calcReservationRate(gh, checkDate);
 				System.out.printf("[%s] 전체 예약률: %.2f%%\n", checkDate, rate);
 				break;
-
 
 			case 7:
 				System.out.println("프로그램을 종료합니다.");

@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 import java.util.UUID;
 
 import com.gh.exception.BookingCancelledException;
+import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.user.Account;
@@ -17,7 +18,7 @@ import com.gh.user.Customer;
 public class BookingServiceImpl implements BookingService {
 	private static final BookingServiceImpl service = new BookingServiceImpl();
 	private static final GuesthouseManager guesthouseManager = new GuesthouseManager();
-	
+
 	private final List<Booking> bookings = new ArrayList<>();
 	private final List<Guesthouse> guestHouses = new ArrayList<>();
 
@@ -32,11 +33,11 @@ public class BookingServiceImpl implements BookingService {
 	/**
 	 * 예약
 	 */
-	 public void addBooking(Customer c, Booking b) {
-        if (b == null) {
-            System.out.println("예약 정보가 유효하지 않습니다.");
-            return;
-        }
+	public void addBooking(Customer c, Booking b) throws InsufficientBalanceException {
+		if (b == null) {
+			System.out.println("예약 정보가 유효하지 않습니다.");
+			return;
+		}
 
 		Guesthouse gh = b.getGuesthouse(); // 예약 대상인 게스트하우스 객체 가져오기
 		Account account = c.getAccount(); // 고객의 계좌 객체 가져오기
@@ -68,8 +69,9 @@ public class BookingServiceImpl implements BookingService {
 
 		// 잔액 확인
 		if (account.getBalance() < totalPrice) {
-			System.out.println("잔액 부족으로 예약할 수 없습니다. 필요 금액: " + totalPrice + ", 현재 잔액: " + account.getBalance());
-			return;
+			throw new InsufficientBalanceException(
+					"잔액 부족으로 예약할 수 없습니다. 필요 금액: " + totalPrice + ", 현재 잔액: " + account.getBalance());
+
 		}
 
 		// 결제 및 예약 처리
@@ -89,7 +91,8 @@ public class BookingServiceImpl implements BookingService {
 
 	}
 
-	public void deleteBooking(Customer c, String bookingId) throws BookingCancelledException {
+	public void deleteBooking(Customer c, String bookingId)
+			throws BookingCancelledException, InsufficientBalanceException {
 		Booking target = null;
 
 		// 예약 ID로 예약 찾기
@@ -146,7 +149,7 @@ public class BookingServiceImpl implements BookingService {
 	 * 예약 변경
 	 */
 	@Override
-	public void updateBooking(Customer c, Booking b) {
+	public void updateBooking(Customer c, Booking b) throws InsufficientBalanceException {
 
 		// 1. 고객이 이 예약을 실제로 가지고 있는지 확인
 		// 수정하려는 booking의 정보가 고객이 가지고 있는 예약이 맞다면 진행
@@ -215,13 +218,13 @@ public class BookingServiceImpl implements BookingService {
 
 			// 7. 예약이 가능할 경우 새 요금 계산 및 잔액 검사
 			if (account.getBalance() < totalPrice) {
-				System.out.println("잔액 부족으로 예약 변경이 불가합니다. 필요 금액: " + totalPrice + " / 현재 잔액: " + account.getBalance());
 
 				// 기존 예약 복구
 				account.setBalance(account.getBalance() - originalPrice);
 				gh.setTotalSales(gh.getTotalSales() + originalPrice);
 				gh.addPeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
-				return;
+				throw new InsufficientBalanceException(
+						"잔액 부족으로 예약 변경이 불가합니다. 필요 금액: " + totalPrice + " / 현재 잔액: " + account.getBalance());
 			}
 
 			// 8. 예약이 가능하고 잔액도 충분한 경우: 결제 수행
@@ -337,9 +340,9 @@ public class BookingServiceImpl implements BookingService {
 	 * 가중치 기반 추천 숙소 리스트 반환
 	 */
 	public List<Guesthouse> getRecommendedByGH(Customer customer) {
-        // GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
-        return guesthouseManager.getRecommendedByGH(guestHouses, customer);
-    }
+		// GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
+		return guesthouseManager.getRecommendedByGH(guestHouses, customer);
+	}
 
 	/////////// 우선순위큐 예약 대기열 구현 ///////////////
 
@@ -365,7 +368,6 @@ public class BookingServiceImpl implements BookingService {
 					+ booking.getNumberOfPeople() + "]";
 		}
 	}
-	
 
 	// 예약 날짜, 시간을 기준으로 정렬
 	private final PriorityQueue<WaitingRequest> waitingList = new PriorityQueue<>(
@@ -384,7 +386,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public void processWaitingList() {
+	public void processWaitingList() throws InsufficientBalanceException {
 		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.
 		// 취소해서 최대 수용 인원 - 현재 수용 인원으로 빈자리가 발생했을 경우, 우선순위큐의 대기열에 우선순위가 높은 예약부터 빈자리에 자동
 		// 예약이 된다.
@@ -429,6 +431,6 @@ public class BookingServiceImpl implements BookingService {
 		if (!hasBooked) {
 			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
 		}
-		
+
 	}
 }
