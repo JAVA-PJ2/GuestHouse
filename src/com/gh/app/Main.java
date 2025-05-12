@@ -299,7 +299,7 @@ public class Main {
 				 * 검색할 게스트하우스 유형
 				 */
 				case 7:
-					System.out.println("검색할 게스트하우스 유형(예: Music, Pet, Party 등)을 입력하세요:");
+					System.out.println("검색할 게스트하우스 유형(예: 음악, 반려동물, 파티 등)을 입력하세요:");
 					String typeToSearch = sc.nextLine();
 	
 					boolean found = manager.hasFeature(gh, typeToSearch);
