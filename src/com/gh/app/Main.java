@@ -19,11 +19,41 @@ import com.gh.service.GuesthouseManager;
 import com.gh.user.Account;
 import com.gh.user.Customer;
 
+/**
+ * 메인 애플리케이션 클래스입니다.
+ * 
+ * <p>
+ * 콘솔 기반의 게스트하우스 예약 시스템을 실행하며, 고객 인증부터 예약/변경/취소/조회/추천/통계 등 다양한 기능을 제공합니다.
+ * </p>
+ *
+ * @author 소유나, 양준용, 우승환
+ */
 public class Main {
+	/**
+	 * 표준 입력을 처리하기 위한 Scanner 인스턴스
+	 */
 	private static final Scanner sc = new Scanner(System.in);
+	/**
+	 * 예약 관련 서비스 구현체
+	 */
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
+	/**
+	 * 게스트하우스 관련 기능 처리 매니저 클래스
+	 */
 	private static final GuesthouseManager manager = new GuesthouseManager();
 
+	/**
+	 * 프로그램 진입점 (main 메서드)
+	 *
+	 * <p>
+	 * 고객 인증을 통해 사용자 정보를 받아오고, CRUD 기반 메뉴를 반복 출력하며 사용자 요청에 따라 예약 기능을 수행합니다.
+	 * </p>
+	 *
+	 * @param args 커맨드라인 인자 (사용되지 않음)
+	 * @throws InsufficientBalanceException 잔액 부족 시 발생
+	 * @throws BookingNotFoundException     예약을 찾지 못한 경우 발생
+	 * @throws BookingCancelledException    이미 취소된 예약에 접근한 경우 발생
+	 */
 	public static void main(String[] args)
 			throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException {
 		// 게스트하우스 생성

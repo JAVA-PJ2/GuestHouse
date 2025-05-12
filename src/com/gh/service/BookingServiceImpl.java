@@ -16,6 +16,17 @@ import com.gh.model.Guesthouse;
 import com.gh.user.Account;
 import com.gh.user.Customer;
 
+/**
+ * {@code BookingServiceImpl} 클래스는 {@link BookingService} 인터페이스의 구현체로, 고객의 예약
+ * 생성, 수정, 삭제, 조회, 추천 및 예약 대기열 처리 등의 기능을 제공합니다.
+ * 
+ * <p>
+ * 싱글톤 패턴을 적용하여 하나의 인스턴스만 사용되도록 구현되어 있습니다.
+ * </p>
+ * 
+ * @author 소유나, 양준용, 우승환
+ */
+
 public class BookingServiceImpl implements BookingService {
 	private static final BookingServiceImpl service = new BookingServiceImpl();
 	private static final GuesthouseManager guesthouseManager = new GuesthouseManager();
@@ -36,8 +47,17 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	/**
-	 * 예약
+	 * 고객의 예약을 생성하고, 결제 및 게스트하우스 인원 업데이트를 수행합니다.
+	 * <p>
+	 * 잔액 부족 시 {@link InsufficientBalanceException}이 발생하며, 인원이 가득 찬 경우 예약 대기열에
+	 * 등록됩니다.
+	 * </p>
+	 *
+	 * @param c 고객 객체
+	 * @param b 예약 정보 객체
+	 * @throws InsufficientBalanceException 고객 잔액이 부족할 경우
 	 */
+
 	public void addBooking(Customer c, Booking b) throws InsufficientBalanceException {
 		if (b == null) {
 			System.out.println("예약 정보가 유효하지 않습니다.");
@@ -96,6 +116,18 @@ public class BookingServiceImpl implements BookingService {
 		BookingFileManager.saveBookings(bookings, c);
 	}
 
+	/**
+	 * 예약 ID를 기반으로 해당 고객의 예약을 취소합니다.
+	 * <p>
+	 * 취소 시 일부 환불이 적용되며, 이후 예약 대기열 자동 처리가 수행됩니다.
+	 * </p>
+	 *
+	 * @param c         고객 객체
+	 * @param bookingId 취소할 예약 ID
+	 * @throws BookingCancelledException    이미 취소된 예약이거나 취소 기한이 지난 경우
+	 * @throws InsufficientBalanceException 예약 변경 중 잔액이 부족한 경우
+	 * @throws BookingNotFoundException     해당 ID에 대한 예약이 존재하지 않는 경우
+	 */
 	public void deleteBooking(Customer c, String bookingId)
 			throws BookingCancelledException, InsufficientBalanceException, BookingNotFoundException {
 		Booking target = null;
@@ -151,9 +183,15 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	/**
-	 * 예약 변경
-	 * 
-	 * @throws BookingCancelledException
+	 * 고객의 기존 예약을 새로운 정보로 변경합니다.
+	 * <p>
+	 * 기존 예약을 환불한 후 새로운 예약을 진행하며, 잔액 부족 시 예외를 발생시킵니다.
+	 * </p>
+	 *
+	 * @param c 고객 객체
+	 * @param b 수정된 예약 정보 객체 (기존 예약과 동일한 bookingId 필수)
+	 * @throws InsufficientBalanceException 변경 예약 금액이 부족할 경우
+	 * @throws BookingCancelledException    취소된 예약을 수정하려는 경우
 	 */
 	@Override
 	public void updateBooking(Customer c, Booking b) throws InsufficientBalanceException, BookingCancelledException {
@@ -266,11 +304,11 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	/**
-	 * 예약 조회
-	 * 
-	 * <p>
-	 * bookingId로 예약 조회
-	 * </p>
+	 * 예약 ID의 해시코드를 기반으로 예약을 조회합니다.
+	 *
+	 * @param bookingId 해시코드 형태의 예약 ID
+	 * @return 예약 객체
+	 * @throws BookingCancelledException 예약을 찾을 수 없는 경우
 	 */
 	public Booking findBooking(int bookingId) throws BookingCancelledException {
 		for (Booking b : bookings) {
@@ -284,11 +322,10 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	/**
-	 * 숙소의 모든 예약 조회
-	 * 
-	 * <p>
-	 * 게하 이름을 찾아서 숙소의 모든 예약 조회를 합니다.
-	 * </p>
+	 * 특정 게스트하우스의 예약 목록을 반환합니다.
+	 *
+	 * @param gh 게스트하우스 객체
+	 * @return 해당 게스트하우스에 대한 예약 리스트
 	 */
 	public List<Booking> findBookingByGHName(Guesthouse gh) {
 		List<Booking> find = new ArrayList<>();
@@ -379,6 +416,13 @@ public class BookingServiceImpl implements BookingService {
 	private final PriorityQueue<WaitingRequest> waitingList = new PriorityQueue<>(
 			Comparator.comparing(WaitingRequest::getRequestDate));
 
+	/**
+	 * 예약이 불가능한 경우, 예약 요청을 대기열에 우선순위 기반으로 등록합니다.
+	 *
+	 * @param c               고객 객체
+	 * @param b               예약 정보 객체
+	 * @param requestDateTime 요청한 날짜 및 시간 (우선순위 기준)
+	 */
 	@Override
 	public void enqueueWaitingRequest(Customer c, Booking b, LocalDateTime requestDateTime) {
 		// 이 메소드는 addBooking에서 수용인원이 꽉 차 예약이 불가능할 경우 호출해서 사용한다.
@@ -391,6 +435,14 @@ public class BookingServiceImpl implements BookingService {
 		System.out.println("예약 대기열에 등록되었습니다: " + c.getName() + ", 우선순위: ");
 	}
 
+	/**
+	 * 예약 대기열에서 조건을 만족하는 예약 요청을 찾아 자동으로 예약을 수행합니다.
+	 * <p>
+	 * 한 번에 단 하나의 요청만 처리되며, 나머지는 다시 대기열로 복귀됩니다.
+	 * </p>
+	 *
+	 * @throws InsufficientBalanceException 예약에 필요한 잔액이 부족할 경우
+	 */
 	@Override
 	public void processWaitingList() throws InsufficientBalanceException {
 		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.

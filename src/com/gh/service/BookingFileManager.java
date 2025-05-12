@@ -1,6 +1,7 @@
 package com.gh.service;
 
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,8 +16,17 @@ import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.user.Customer;
 
+/**
+ * BookingFileManager는 고객의 예약 정보를 CSV 파일에 저장하고 불러오는 기능을 제공한다.
+ */
 public class BookingFileManager {
 
+	/**
+	 * 고객의 모든 예약 정보를 CSV 파일로 저장한다. 기존 파일이 존재할 경우 덮어쓴다.
+	 *
+	 * @param bookings 고객의 예약 목록
+	 * @param c        예약을 가진 고객 객체
+	 */
 	// 1. 전체 Booking 리스트를 csv에 저장(덮어쓰기)
 	public static void saveBookings(List<Booking> bookings, Customer c) {
 		String FILE_PATH = "booking-" + c.getName() + ".csv";
@@ -40,6 +50,13 @@ public class BookingFileManager {
 		}
 	}
 
+	/**
+	 * 고객의 예약 정보를 CSV 파일에서 불러와 Customer 객체와 시스템에 복원한다. 예약된 게스트하우스 정보는 전달받은 리스트에서
+	 * 참조하여 연결한다.
+	 *
+	 * @param c              예약을 불러올 고객 객체
+	 * @param guesthouseList 시스템 내의 모든 게스트하우스 목록
+	 */
 	// 2. csv에서 Booking 리스트를 불러오기
 	public static void loadBookings(Customer c, List<Guesthouse> guesthouseList) {
 		String fileName = "booking-" + c.getName() + ".csv";
@@ -52,7 +69,7 @@ public class BookingFileManager {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
-			
+
 			// 첫 줄 헤더 스킵
 			br.readLine();
 
@@ -89,11 +106,11 @@ public class BookingFileManager {
 				booking.setBookingId(bookingId);
 				booking.setEndDate(endDate);
 				booking.setIsCancled(isCancled);
-				
-				if(!isCancled) {
+
+				if (!isCancled) {
 					gh.addPeople(startDate, endDate, numberOfPeople);
 				}
-				
+
 				// 리스트에 추가
 				c.getBookings().add(booking);
 				BookingServiceImpl.getInstance().getBookings().add(booking);

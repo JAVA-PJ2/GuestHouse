@@ -79,19 +79,6 @@ public interface BookingService {
 	boolean canAccomodate(LocalDate date, int numberOfPoeple);
 
 	/**
-	 * 고객에게 추천할 숙소 이름 목록을 반환합니다.
-	 * 
-	 * <p>
-	 * 총 매출(40%)과 예약 수(60%)의 가중치를 기반으로 점수를 계산하여 전체 게스트하우스 중 상위 5개를 선정하고, 숙소 이름만
-	 * 반환합니다.
-	 * </p>
-	 *
-	 * @param customer 추천 기준이 되는 고객 정보
-	 * @return 추천 숙소 이름(String)의 리스트 (최대 5개)
-	 */
-	List<Guesthouse> getRecommendedByGH(List<Guesthouse> gh, Customer customer);
-
-	/**
 	 * 예약이 불가능한 경우, 고객의 예약 요청을 대기열에 우선순위와 함께 추가합니다.
 	 *
 	 * @param c           예약을 요청한 고객
@@ -107,4 +94,17 @@ public interface BookingService {
 	 * @throws InsufficientBalanceException
 	 */
 	void processWaitingList() throws InsufficientBalanceException;
+
+	/**
+	 * 고객에게 추천할 숙소 이름 목록을 반환합니다.
+	 * 
+	 * <p>
+	 * 총 매출(40%)과 예약 수(60%)의 가중치를 기반으로 점수를 계산하여 전체 게스트하우스 중 상위 5개를 선정하고, 숙소 이름만
+	 * 반환합니다.
+	 * </p>
+	 * 
+	 * @param customer 추천 기준이 되는 고객 정보
+	 * @return 추천 숙소 이름(String)의 리스트 (최대 5개)
+	 */
+	List<Guesthouse> getRecommendedByGH(List<Guesthouse> gh, Customer customer);
 }

@@ -1,4 +1,11 @@
 bookingId,startDate,endDate,bookingDays,numberOfPeople,isCancelled,guesthouseId,customerEmail
 d8b93e2c-d4bd-4233-bc94-57dab928acb3, 2025-05-12, 2025-05-14, 2, 1, false, GH001, hong@naver.com
-7441161c-2d63-42e2-80f5-169e8fa0b30c, 2025-06-01, 2025-06-04, 3, 3, false, GH001, hong@naver.com
-f89795df-eb80-4920-ad4a-845d69e67164, 2030-01-01, 2030-01-04, 3, 2, false, GH001, hong@naver.com
+7441161c-2d63-42e2-80f5-169e8fa0b30c, 2025-06-01, 2025-06-04, 3, 3, true, GH001, hong@naver.com
+f89795df-eb80-4920-ad4a-845d69e67164, 2030-01-01, 2030-01-04, 3, 2, true, GH001, hong@naver.com
+84305400-b332-4a40-84b4-09ced7c4de2e, 2040-01-01, 2040-01-04, 3, 2, false, GH001, hong@naver.com
+a95e3673-3828-4cc4-b476-f75cde5a6748, 2030-01-01, 2030-01-04, 3, 2, false, GH001, hong@naver.com
+773c786e-9b99-461f-9824-c4c1bb650106, 2030-01-01, 2030-01-03, 2, 1, false, GH002, hong@naver.com
+85695dcf-94e0-4217-bf28-631a33fd1c3c, 2026-01-01, 2026-01-04, 3, 2, false, GH002, hong@naver.com
+52d9dc0a-3869-4a8c-ae47-3b8478af6af1, 2039-01-01, 2039-01-05, 4, 5, false, GH001, hong@naver.com
+542539d4-675e-415b-85e9-1e1c43d80a68, 2025-10-11, 2025-10-14, 3, 2, false, GH001, hong@naver.com
+642d3d11-be70-4511-9ec4-ab2d9457e3b5, 2030-01-01, 2030-01-04, 3, 2, false, GH001, hong@naver.com
