@@ -22,6 +22,10 @@ public class BookingServiceImpl implements BookingService {
 	private final List<Booking> bookings = new ArrayList<>();
 	private final List<Guesthouse> guestHouses = new ArrayList<>();
 
+	public List<Booking> getBookings() {
+		return bookings;
+	}
+	
 	private BookingServiceImpl() {
 	}
 
@@ -88,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
 
 		System.out.println("예약이 완료되었습니다. 예약 번호: " + bookingId);
 		System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
-
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	public void deleteBooking(Customer c, String bookingId)
@@ -143,6 +147,7 @@ public class BookingServiceImpl implements BookingService {
 		System.out.println("현재 잔액: " + account.getBalance() + ", 게스트하우스 총 매출: " + gh.getTotalSales());
 
 		processWaitingList(); // 예약이 취소되었으니 대기열 자동 예약 시도
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	/**
@@ -255,6 +260,8 @@ public class BookingServiceImpl implements BookingService {
 			System.out.println("예약 변경 실패: 최대 수용 인원 초과");
 
 		}
+		
+		BookingFileManager.saveBookings(bookings, c);
 	}
 
 	@Override
