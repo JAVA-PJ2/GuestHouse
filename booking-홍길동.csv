@@ -1,3 +1,4 @@
 bookingId,startDate,endDate,bookingDays,numberOfPeople,isCancelled,guesthouseId,customerEmail
 d8b93e2c-d4bd-4233-bc94-57dab928acb3, 2025-05-12, 2025-05-14, 2, 1, false, GH001, hong@naver.com
 7441161c-2d63-42e2-80f5-169e8fa0b30c, 2025-06-01, 2025-06-04, 3, 3, false, GH001, hong@naver.com
+f89795df-eb80-4920-ad4a-845d69e67164, 2030-01-01, 2030-01-04, 3, 2, false, GH001, hong@naver.com

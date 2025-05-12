@@ -208,9 +208,8 @@ public class Booking {
 	 */
 	@Override
 	public String toString() {
-		return "Booking [bookingId=" + bookingId + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", bookingDays=" + bookingDays + ", numberOfPeople=" + numberOfPeople + ", guesthouse=" + guesthouse
-				+ "]";
+		return String.format("예약번호: %s | 날짜: %s ~ %s (%d박, %d명) | 숙소: %s", bookingId, startDate, endDate, bookingDays,
+				numberOfPeople, guesthouse != null ? guesthouse.getName() : "없음");
 	}
 
 }
