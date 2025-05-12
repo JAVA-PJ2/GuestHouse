@@ -90,6 +90,10 @@ public class BookingFileManager {
 				booking.setEndDate(endDate);
 				booking.setIsCancled(isCancled);
 				
+				if(!isCancled) {
+					gh.addPeople(startDate, endDate, numberOfPeople);
+				}
+				
 				// 리스트에 추가
 				c.getBookings().add(booking);
 				BookingServiceImpl.getInstance().getBookings().add(booking);

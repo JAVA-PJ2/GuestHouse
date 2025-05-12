@@ -207,6 +207,8 @@ public class Main {
 			case 6:
 				System.out.print("예약률을 확인할 날짜를 입력하세요 (yyyy-mm-dd): ");
 				LocalDate checkDate = LocalDate.parse(sc.nextLine());
+				
+				
 
 				double rate = manager.calcReservationRate(gh, checkDate);
 				System.out.printf("[%s] 전체 예약률: %.2f%%\n", checkDate, rate);
