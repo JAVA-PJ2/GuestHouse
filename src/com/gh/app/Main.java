@@ -54,7 +54,7 @@ public class Main {
 			if (customer == null)
 				System.out.println("등록되지 않은 고객입니다. 다시 입력하세요.\n");
 		}
-		
+
 		// 저장된 예약 내역 불러오기
 		BookingFileManager.loadBookings(customer, gh);
 
@@ -179,7 +179,7 @@ public class Main {
 						service.deleteBooking(customer, toCancel.getBookingId());
 						cancelList.remove(cancelIndex); // 예외 없을 때만 삭제
 					} catch (BookingCancelledException e) {
-						System.out.println("[오류] " + e.getMessage());
+						System.out.println("[삭제 실패] " + e.getMessage());
 					}
 				} else {
 					System.out.println("예약 취소가 취소되었습니다.");

@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 import java.util.UUID;
 
 import com.gh.exception.BookingCancelledException;
+import com.gh.exception.BookingNotFoundException;
 import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
@@ -25,7 +26,7 @@ public class BookingServiceImpl implements BookingService {
 	public List<Booking> getBookings() {
 		return bookings;
 	}
-	
+
 	private BookingServiceImpl() {
 	}
 
@@ -96,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	public void deleteBooking(Customer c, String bookingId)
-			throws BookingCancelledException, InsufficientBalanceException {
+			throws BookingCancelledException, InsufficientBalanceException, BookingNotFoundException {
 		Booking target = null;
 
 		// 예약 ID로 예약 찾기
@@ -109,8 +110,7 @@ public class BookingServiceImpl implements BookingService {
 
 		// 예약이 없으면 종료
 		if (target == null) {
-			System.out.println("해당 예약을 찾을 수 없습니다.");
-			return;
+			throw new BookingNotFoundException("해당 예약을 찾을 수 없습니다.");
 		}
 
 		// 이미 취소된 예약이면 메시지 출력 후 종료
@@ -152,9 +152,10 @@ public class BookingServiceImpl implements BookingService {
 
 	/**
 	 * 예약 변경
+	 * @throws BookingCancelledException 
 	 */
 	@Override
-	public void updateBooking(Customer c, Booking b) throws InsufficientBalanceException {
+	public void updateBooking(Customer c, Booking b) throws InsufficientBalanceException, BookingCancelledException {
 
 		// 1. 고객이 이 예약을 실제로 가지고 있는지 확인
 		// 수정하려는 booking의 정보가 고객이 가지고 있는 예약이 맞다면 진행
@@ -168,8 +169,7 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		if (!bookingExists) {
-			System.out.println("고객의 예약 정보가 없습니다.");
-			return;
+			throw new BookingCancelledException("고객의 예약 정보가 없습니다.");
 		}
 
 		// 2. 예약이 취소되었는지 확인
@@ -190,8 +190,7 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		if (original == null) {
-			System.out.println("해당 예약을 찾을 수 없습니다: " + b.getBookingId());
-			return;
+			throw new BookingCancelledException("해당 예약을 찾을 수 없습니다: " + b.getBookingId());
 		}
 
 		// 4. 기존 예약에 대해 환불 처리
@@ -260,7 +259,7 @@ public class BookingServiceImpl implements BookingService {
 			System.out.println("예약 변경 실패: 최대 수용 인원 초과");
 
 		}
-		
+
 		BookingFileManager.saveBookings(bookings, c);
 	}
 
@@ -272,14 +271,13 @@ public class BookingServiceImpl implements BookingService {
 	 * bookingId로 예약 조회
 	 * </p>
 	 */
-	public Booking findBooking(int bookingId) {
+	public Booking findBooking(int bookingId) throws BookingCancelledException {
 		for (Booking b : bookings) {
 			if (b.getBookingId().hashCode() == bookingId) {
 				return b;
 			}
 		}
-		System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
-		return null;
+		throw new BookingCancelledException (bookingId + " 예약 정보를 찾을 수 없습니다.");
 
 	}
 
