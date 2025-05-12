@@ -1,8 +1,11 @@
 package com.gh.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,7 +20,8 @@ public class BookingServiceImpl implements BookingService {
 	private final List<Booking> bookings = new ArrayList<>();
 	private final List<Guesthouse> guestHouses = new ArrayList<>();
 
-	private BookingServiceImpl() {}
+	private BookingServiceImpl() {
+	}
 
 	public static BookingServiceImpl getInstance() {
 		return service;
@@ -43,6 +47,12 @@ public class BookingServiceImpl implements BookingService {
 		LocalDate endDate = startDate.plusDays(days); // 체크아웃 날짜 계산
 		b.setEndDate(endDate); // 예약 객체에 체크아웃 날짜설정
 
+		// 게스트하우스의 최대 수용인원 < 예약 인원일 경우
+		if (gh.getMaxPeople() < b.getNumberOfPeople()) {
+			System.out.println("예약 인원이 게스트하우스 최대 수용 인원보다 많아 예약할 수 없습니다.");
+			return;
+		}
+
 		double pricePerDay = gh.getPricePerDays(); // 1박당 가격
 		double totalPrice = pricePerDay * days * people; // 총 결제 금액 계산
 		b.setTotalAmount(totalPrice); // 예약 객체에 총 결제 금액 설정
@@ -52,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
 
 		if (!canBook) {
 			System.out.println("예약 불가: 해당 날짜의 최대 수용 인원을 초과합니다.");
+			enqueueWaitingRequest(c, b, LocalDateTime.now()); // 예약 대기열 추가
 			return;
 		}
 
@@ -117,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
 		// 예약 정보로 환불 금액 계산
 		int people = target.getNumberOfPeople();
 		int days = target.getBookingDays();
-		double refundAmount =  people * days * target.getGuesthouse().getPricePerDays() * 0.5; // 50% 환불
+		double refundAmount = people * days * target.getGuesthouse().getPricePerDays() * 0.5; // 50% 환불
 
 		// 환불 처리
 		account.setBalance(account.getBalance() + refundAmount); // 계좌에 환불 금액 입금
@@ -129,6 +140,8 @@ public class BookingServiceImpl implements BookingService {
 		// 성공 메시지 출력
 		System.out.println("예약이 성공적으로 취소되었습니다. 환불 금액: " + refundAmount);
 		System.out.println("현재 잔액: " + account.getBalance() + ", 게스트하우스 총 매출: " + gh.getTotalSales());
+
+		processWaitingList(); // 예약이 취소되었으니 대기열 자동 예약 시도
 	}
 
 	/**
@@ -155,91 +168,92 @@ public class BookingServiceImpl implements BookingService {
 
 		// 2. 예약이 취소되었는지 확인
 		// 취소된 예약인지 여부 검증
-    if (b.getIsCancled()) {
-	        System.out.println("취소된 예약입니다.");
-	        return;
-	    }
+		if (b.getIsCancled()) {
+			System.out.println("취소된 예약입니다.");
+			return;
+		}
 
-	    // 3. 시스템 전체 예약 목록에서 해당 예약 찾기
-	    // 수정하려는 예약의 기존 정보 찾기
-	    Booking original = null;
-	    for (Booking booking : bookings) {
-	        if (booking.getBookingId().equals(b.getBookingId())) {
-	            original = booking;
-	            break;
-	        }
-	    }
+		// 3. 시스템 전체 예약 목록에서 해당 예약 찾기
+		// 수정하려는 예약의 기존 정보 찾기
+		Booking original = null;
+		for (Booking booking : bookings) {
+			if (booking.getBookingId().equals(b.getBookingId())) {
+				original = booking;
+				break;
+			}
+		}
 
-	    if (original == null) {
-	        System.out.println("해당 예약을 찾을 수 없습니다: " + b.getBookingId());
-	        return;
-	    }
+		if (original == null) {
+			System.out.println("해당 예약을 찾을 수 없습니다: " + b.getBookingId());
+			return;
+		}
 
-	    // 4. 기존 예약에 대해 환불 처리
-	    // 수정하려는 예약의 게스트하우스와 고객의 계좌 정보
-	    Guesthouse gh = b.getGuesthouse();
-	    Account account = c.getAccount();
-	    
-	    // 기존 예약 요금 계산
-	    int originalDays = original.getBookingDays();
-	    int originalPeople = original.getNumberOfPeople();
-	    double rate = gh.getPricePerDays();
-	    double originalPrice = originalDays * originalPeople * rate;
+		// 4. 기존 예약에 대해 환불 처리
+		// 수정하려는 예약의 게스트하우스와 고객의 계좌 정보
+		Guesthouse gh = b.getGuesthouse();
+		Account account = c.getAccount();
 
-	    // 기존 예약 환불
-	    account.setBalance(account.getBalance() + originalPrice);
-	    gh.setTotalSales(gh.getTotalSales() - originalPrice);
+		// 기존 예약 요금 계산
+		int originalDays = original.getBookingDays();
+		int originalPeople = original.getNumberOfPeople();
+		double rate = gh.getPricePerDays();
+		double originalPrice = originalDays * originalPeople * rate;
 
-	    // 5. 기존 예약 인원을 날짜별로 제거
-	    gh.removePeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
+		// 기존 예약 환불
+		account.setBalance(account.getBalance() + originalPrice);
+		gh.setTotalSales(gh.getTotalSales() - originalPrice);
 
-	    // 6. 새로운 예약이 가능한지 확인
-	    boolean canBook = gh.canBook(b.getStartDate(), b.getEndDate(), b.getNumberOfPeople());
+		// 5. 기존 예약 인원을 날짜별로 제거
+		gh.removePeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
 
-	    if (canBook) {
-	        // 새 예약 요금 계산
-	        int days = b.getBookingDays();
-	        int people = b.getNumberOfPeople();
-	        double totalPrice = days * people * rate;
+		// 6. 새로운 예약이 가능한지 확인
+		boolean canBook = gh.canBook(b.getStartDate(), b.getEndDate(), b.getNumberOfPeople());
 
-	        // 7. 예약이 가능할 경우 새 요금 계산 및 잔액 검사
-	        if (account.getBalance() < totalPrice) {
-	            System.out.println("잔액 부족으로 예약 변경이 불가합니다. 필요 금액: " + totalPrice + " / 현재 잔액: " + account.getBalance());
+		if (canBook) {
+			// 새 예약 요금 계산
+			int days = b.getBookingDays();
+			int people = b.getNumberOfPeople();
+			double totalPrice = days * people * rate;
 
-	            // 기존 예약 복구
-	            account.setBalance(account.getBalance() - originalPrice);
-	            gh.setTotalSales(gh.getTotalSales() + originalPrice);
-	            gh.addPeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
-	            return;
-	        }
+			// 7. 예약이 가능할 경우 새 요금 계산 및 잔액 검사
+			if (account.getBalance() < totalPrice) {
+				System.out.println("잔액 부족으로 예약 변경이 불가합니다. 필요 금액: " + totalPrice + " / 현재 잔액: " + account.getBalance());
 
-	        // 8. 예약이 가능하고 잔액도 충분한 경우: 결제 수행
-	        account.setBalance(account.getBalance() - totalPrice);
-	        gh.setTotalSales(gh.getTotalSales() + totalPrice);
+				// 기존 예약 복구
+				account.setBalance(account.getBalance() - originalPrice);
+				gh.setTotalSales(gh.getTotalSales() + originalPrice);
+				gh.addPeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
+				return;
+			}
 
-	        // 9. 날짜별 인원 다시 추가
-	        gh.addPeople(b.getStartDate(), b.getEndDate(), b.getNumberOfPeople());
+			// 8. 예약이 가능하고 잔액도 충분한 경우: 결제 수행
+			account.setBalance(account.getBalance() - totalPrice);
+			gh.setTotalSales(gh.getTotalSales() + totalPrice);
 
-	        // 10. 예약 정보 시스템에 반영
-	        bookings.remove(original);
-	        bookings.add(b);
-	        
-		    // 고객 예약 목록에도 반영!
-		    c.getBookings().remove(original);
-		    c.getBookings().add(b);
+			// 9. 날짜별 인원 다시 추가
+			gh.addPeople(b.getStartDate(), b.getEndDate(), b.getNumberOfPeople());
 
-	        System.out.println("예약이 성공적으로 변경되었습니다: " + b.getStartDate() + " ~ " + b.getEndDate());
-	        System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
-	        System.out.println("게스트하우스 총 매출: " + gh.getTotalSales());
+			// 10. 예약 정보 시스템에 반영
+			bookings.remove(original);
+			bookings.add(b);
 
-	    } else {
-	        // 예약 실패 → 기존 예약 복구
-	        account.setBalance(account.getBalance() - originalPrice);
-	        gh.setTotalSales(gh.getTotalSales() + originalPrice);
-	        gh.addPeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
+			// 고객 예약 목록에도 반영!
+			c.getBookings().remove(original);
+			c.getBookings().add(b);
 
-	        System.out.println("예약 변경 실패: 최대 수용 인원 초과");
-	    }
+			System.out.println("예약이 성공적으로 변경되었습니다: " + b.getStartDate() + " ~ " + b.getEndDate());
+			System.out.println("차감 금액: " + totalPrice + ", 남은 잔액: " + account.getBalance());
+			System.out.println("게스트하우스 총 매출: " + gh.getTotalSales());
+
+		} else {
+			// 예약 실패 → 기존 예약 복구
+			account.setBalance(account.getBalance() - originalPrice);
+			gh.setTotalSales(gh.getTotalSales() + originalPrice);
+			gh.addPeople(original.getStartDate(), original.getEndDate(), original.getNumberOfPeople());
+
+			System.out.println("예약 변경 실패: 최대 수용 인원 초과");
+
+		}
 	}
 
 	@Override
@@ -251,34 +265,33 @@ public class BookingServiceImpl implements BookingService {
 	 * </p>
 	 */
 	public Booking findBooking(int bookingId) {
-		Booking find = null;
 		for (Booking b : bookings) {
 			if (b.getBookingId().hashCode() == bookingId) {
-				find = b;
-			} else {
-				System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
+				return b;
 			}
 		}
-		return find;
+		System.out.println(bookingId + " 예약 정보를 찾을 수 없습니다.");
+		return null;
+
 	}
-	
+
 	@Override
 	/**
 	 * 숙소의 모든 예약 조회
 	 * 
 	 * <p>
-	 * 	게하 이름을 찾아서 숙소의 모든 예약 조회를 합니다.
+	 * 게하 이름을 찾아서 숙소의 모든 예약 조회를 합니다.
 	 * </p>
 	 */
 	public List<Booking> findBookingByGHName(Guesthouse gh) {
 		List<Booking> find = new ArrayList<>();
-		
+
 		for (Booking b : bookings) {
 			if (b.getGuesthouse() != null && b.getGuesthouse().getBookingId().equals(gh.getBookingId())) {
 				find.add(b);
 			}
 		}
-		
+
 		if (find.isEmpty()) {
 			System.out.println(gh.getName() + " 해당 숙소의 예약 정보가 없습니다. ");
 		} else {
@@ -286,7 +299,7 @@ public class BookingServiceImpl implements BookingService {
 				b.toString();
 			}
 		}
-		
+
 		return find;
 	}
 
@@ -320,7 +333,7 @@ public class BookingServiceImpl implements BookingService {
 	public List<Booking> findBooking(Customer cs) {
 		return cs.getBookings();
 	}
-	
+
 	@Override
 	/**
 	 * 가중치 기반 추천 숙소 리스트 반환
@@ -328,24 +341,114 @@ public class BookingServiceImpl implements BookingService {
 	public List<Guesthouse> getRecommendedByGH(Customer customer) {
 		// guestHouses 리스트를 스트림으로 변환하여 정렬 및 추천 대상 선정
 		return guestHouses.stream()
-		        // guesthouse를 비교하여 정렬하는 로직 정의 (내림차순 정렬)
-		        .sorted((g1, g2) -> {
-		            // g1에 대한 예약 횟수 계산
-		        	// g2에 대한 예약 횟수 계산
-		            long bookings1 = bookings.stream().filter(b -> b.getGuesthouse().equals(g1)).count();
-		            long bookings2 = bookings.stream().filter(b -> b.getGuesthouse().equals(g2)).count();
+				// guesthouse를 비교하여 정렬하는 로직 정의 (내림차순 정렬)
+				.sorted((g1, g2) -> {
+					// g1에 대한 예약 횟수 계산
+					// g2에 대한 예약 횟수 계산
+					long bookings1 = bookings.stream().filter(b -> b.getGuesthouse().equals(g1)).count();
+					long bookings2 = bookings.stream().filter(b -> b.getGuesthouse().equals(g2)).count();
 
-		            // g1, g2의 계산: 
-		            // 총 매출의 40% + 예약 수의 60%
-		            double result1 = g1.getTotalSales() * 0.4 + bookings1 * 0.6;
-		            double result2 = g2.getTotalSales() * 0.4 + bookings2 * 0.6;
+					// g1, g2의 계산:
+					// 총 매출의 40% + 예약 수의 60%
+					double result1 = g1.getTotalSales() * 0.4 + bookings1 * 0.6;
+					double result2 = g2.getTotalSales() * 0.4 + bookings2 * 0.6;
 
-		            // 계산 기준으로 내림차순 정렬 (높은 결과가 우선)
-		            return Double.compare(result2, result1);
-		        })
-		        // 상위 5개의 게스트하우스만 선택
-		        .limit(5)
-		        // 결과를 리스트로 수집
-		        .collect(Collectors.toList());
+					// 계산 기준으로 내림차순 정렬 (높은 결과가 우선)
+					return Double.compare(result2, result1);
+				})
+				// 상위 5개의 게스트하우스만 선택
+				.limit(5)
+				// 결과를 리스트로 수집
+				.collect(Collectors.toList());
 	}
+
+	/////////// 우선순위큐 예약 대기열 구현 ///////////////
+
+	private static class WaitingRequest {
+		Customer customer;
+		Booking booking;
+		LocalDateTime requestDateTime;
+
+		public WaitingRequest(Customer customer, Booking booking, LocalDateTime requestDateTime) {
+			this.customer = customer;
+			this.booking = booking;
+			this.requestDateTime = requestDateTime;
+		}
+
+		public LocalDateTime getRequestDate() {
+			return requestDateTime;
+		}
+
+		@Override
+		// 디버깅용, 추후 대기열 리스트 출력 가능
+		public String toString() {
+			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
+					+ booking.getNumberOfPeople() + "]";
+		}
+
+	}
+
+	// 예약 날짜, 시간을 기준으로 정렬
+	private final PriorityQueue<WaitingRequest> waitingList = new PriorityQueue<>(
+			Comparator.comparing(WaitingRequest::getRequestDate));
+
+	@Override
+	public void enqueueWaitingRequest(Customer c, Booking b, LocalDateTime requestDateTime) {
+		// 이 메소드는 addBooking에서 수용인원이 꽉 차 예약이 불가능할 경우 호출해서 사용한다.
+		// 호출할 경우 예약한 고객정보 c, 예약 정보 b, 예약한 현재 시간 requestDate를 인자로 받는다.
+		// 우선순위 큐를 구현하여 requestDate를 기준으로 c와 b의 정보를 저장한다.
+
+		WaitingRequest request = new WaitingRequest(c, b, requestDateTime);
+		waitingList.offer(request);
+
+		System.out.println("예약 대기열에 등록되었습니다: " + c.getName() + ", 우선순위: ");
+	}
+
+	@Override
+	public void processWaitingList() {
+		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.
+		// 취소해서 최대 수용 인원 - 현재 수용 인원으로 빈자리가 발생했을 경우, 우선순위큐의 대기열에 우선순위가 높은 예약부터 빈자리에 자동
+		// 예약이 된다.
+		// 만약, 빈자리가 1개인데, 우선순위가 1순위가 2명, 2순위가 1명일 경우 2순위가 자동으로 예약된다.
+		// 이 메소드에서 addBooking 메소드를 호출해서 메소드 재사용하고 코드 길이를 줄이는게 좋을 것 같다.
+
+		// 대기열이 비어있으면 처리할 필요 없음
+		if (waitingList.isEmpty()) {
+			return;
+		}
+
+		// 대기열 순서대로 순회하면서 처리 가능한 예약 찾기
+		List<WaitingRequest> skipped = new ArrayList<>();
+		boolean hasBooked = false;
+
+		while (!waitingList.isEmpty()) {
+			WaitingRequest req = waitingList.poll(); // 우선순위 가장 높은 요청 꺼내기
+			Customer customer = req.customer;
+			Booking booking = req.booking;
+			Guesthouse gh = booking.getGuesthouse();
+
+			int people = booking.getNumberOfPeople();
+			LocalDate startDate = booking.getStartDate();
+			LocalDate endDate = booking.getEndDate();
+
+			// 해당 예약이 게스트하우스에 들어갈 수 있는지 확인
+			if (gh.canBook(startDate, endDate, people)) {
+				System.out.println("========================");
+				System.out.println("대기열 자동 예약 처리 중...");
+				addBooking(customer, booking); // 예약 확정
+				hasBooked = true;
+			} else {
+				// 현재는 못 넣지만, 나중에 다시 넣기 위해 보관
+				skipped.add(req);
+			}
+		}
+
+		// 처리하지 못한 요청들을 다시 대기열로 복구
+		waitingList.addAll(skipped); // 어차피 걍 넣어도 우선순위 기준으로 정렬 됨
+
+		if (!hasBooked) {
+			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
+		}
+	}
+
 }

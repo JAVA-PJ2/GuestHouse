@@ -1,6 +1,7 @@
 package com.gh.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.gh.model.Booking;
@@ -73,4 +74,20 @@ public interface BookingService {
      * @return 추천 숙소 이름(String)의 리스트 (최대 5개)
      */
 	List<Guesthouse> getRecommendedByGH(Customer customer);
+	
+	/**
+	 * 예약이 불가능한 경우, 고객의 예약 요청을 대기열에 우선순위와 함께 추가합니다.
+	 *
+	 * @param c           예약을 요청한 고객
+	 * @param b           예약 정보
+	 * @param requestDate 예약 우선순위 (값이 낮을수록 우선)
+	 */
+	void enqueueWaitingRequest(Customer c, Booking b, LocalDateTime requestDate);
+	
+	/**
+	 * 예약이 취소되어 자리가 날 경우,
+	 * 대기열에서 우선순위가 높은 예약 요청을 확인하여 자동으로 예약을 처리합니다.
+	 * 조건에 맞는 예약이 있을 경우 단 한 건만 처리됩니다.
+	 */
+	void processWaitingList();
 }
