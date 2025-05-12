@@ -141,8 +141,20 @@ public class Main {
 
 				Booking selected = userBookings.get(selection);
 
-				System.out.print("새 시작일 (yyyy-mm-dd): ");
-				LocalDate newStart = LocalDate.parse(sc.nextLine());
+				LocalDate updateStartDate = null;
+				while (updateStartDate == null) {
+					System.out.print("새 시작 날짜 입력 (yyyy-MM-dd): ");
+					String updateInput = sc.nextLine().trim();
+					try {
+						updateStartDate = LocalDate.parse(updateInput);
+						if (updateStartDate.isBefore(LocalDate.now())) {
+							System.out.println("[오류] 현재 날짜 이후만 예약 가능합니다.");
+							updateStartDate = null;
+						}
+					} catch (Exception e) {
+						System.out.println("[오류] 날짜 형식이 올바르지 않습니다. 예: 2025-05-12");
+					}
+				}
 
 				System.out.print("새 숙박일수 입력: ");
 				int newDays = Integer.parseInt(sc.nextLine());
@@ -150,7 +162,7 @@ public class Main {
 				System.out.print("새 인원 수 입력: ");
 				int newPeople = Integer.parseInt(sc.nextLine());
 
-				Booking modified = new Booking(newStart, newDays, newPeople, selected.getGuesthouse());
+				Booking modified = new Booking(updateStartDate, newDays, newPeople, selected.getGuesthouse());
 				modified.setBookingId(selected.getBookingId());
 
 				try {
