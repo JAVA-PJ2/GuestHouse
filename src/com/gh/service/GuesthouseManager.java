@@ -73,5 +73,16 @@ public class GuesthouseManager {
 
         return (double) totalReserved / totalCapacity * 100;
     }
+    
+    /**
+     * 특정 게하의 존재 여부 구현
+     * 
+     * @param gh
+     * @param feature
+     * @return
+     */
+    public boolean hasFeature(Guesthouse gh, String feature) {
+    	return gh.hasFeature(feature);
+    }
 
 }
