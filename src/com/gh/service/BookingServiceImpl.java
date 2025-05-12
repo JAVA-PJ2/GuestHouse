@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.gh.exception.BookingCancelledException;
 import com.gh.model.Booking;
@@ -33,13 +32,12 @@ public class BookingServiceImpl implements BookingService {
 	/**
 	 * 예약
 	 */
-	public void addBooking(Customer c, Booking b) {
-		if (b == null) {
-			System.out.println("예약 정보가 유효하지 않습니다.");
-			return;
-		}
+	 public void addBooking(Customer c, Booking b) {
+        if (b == null) {
+            System.out.println("예약 정보가 유효하지 않습니다.");
+            return;
+        }
 
-//		Customer customer = b.getCustomer(); // 예약을 한 고객 객체 가져오기
 		Guesthouse gh = b.getGuesthouse(); // 예약 대상인 게스트하우스 객체 가져오기
 		Account account = c.getAccount(); // 고객의 계좌 객체 가져오기
 
@@ -342,7 +340,6 @@ public class BookingServiceImpl implements BookingService {
         // GuesthouseManager의 메소드를 사용하여 추천 숙소 리스트를 가져옴
         return guesthouseManager.getRecommendedByGH(guestHouses, customer);
     }
-	}
 
 	/////////// 우선순위큐 예약 대기열 구현 ///////////////
 
@@ -367,8 +364,8 @@ public class BookingServiceImpl implements BookingService {
 			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
 					+ booking.getNumberOfPeople() + "]";
 		}
-
 	}
+	
 
 	// 예약 날짜, 시간을 기준으로 정렬
 	private final PriorityQueue<WaitingRequest> waitingList = new PriorityQueue<>(
