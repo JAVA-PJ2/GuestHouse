@@ -133,15 +133,14 @@ public class Guesthouse {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	/**
 	 * @param totalSales 게스트하우스의 총 매출 설정
 	 */
 	public void setTotalSales(double totalSales) {
 		this.totalSales = totalSales;
 	}
-	
-	
+
 	/**
 	 * @return 게스트하우스의 총 매출 반환
 	 */
@@ -152,8 +151,8 @@ public class Guesthouse {
 	/**
 	 * 날짜별 인원 추가
 	 * 
-	 * @param start 체크인
-	 * @param end 체크아웃
+	 * @param start     체크인
+	 * @param end       체크아웃
 	 * @param numPeople 투숙인원수
 	 */
 	public void addPeople(LocalDate start, LocalDate end, int numPeople) {
@@ -168,8 +167,8 @@ public class Guesthouse {
 	/**
 	 * 날짜별 인원 제거
 	 * 
-	 * @param start 체크인
-	 * @param end 체크아웃
+	 * @param start     체크인
+	 * @param end       체크아웃
 	 * @param numPeople 투숙인원수
 	 */
 	public void removePeople(LocalDate start, LocalDate end, int numPeople) {
@@ -187,9 +186,9 @@ public class Guesthouse {
 
 	/**
 	 * 해당 날짜 구간 예약 가능 여부
-     *
-	 * @param start 체크인
-	 * @param end 체크아웃
+	 *
+	 * @param start     체크인
+	 * @param end       체크아웃
 	 * @param numPeople 투숙인원수
 	 * @return 예약 가능 여부
 	 */
@@ -204,7 +203,7 @@ public class Guesthouse {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 해당 게스트하우스에 대한 예약 수를 계산
 	 * 
@@ -214,11 +213,11 @@ public class Guesthouse {
 		// 예약 시스템의 booking 리스트에서 해당 게스트하우스를 기준으로 예약 계산
 		long count = 0;
 		// findBooking을 통해 해당 고객의 예약 리스트를 가져옴
-        for (Booking b : BookingServiceImpl.getInstance().findBooking(cs)) {
-            if (b.getGuesthouse().equals(this)) {
-                count++;
-            }
-        }
+		for (Booking b : BookingServiceImpl.getInstance().findBooking(cs)) {
+			if (b.getGuesthouse().equals(this)) {
+				count++;
+			}
+		}
 		return count;
 	}
 
@@ -226,7 +225,7 @@ public class Guesthouse {
 	public Map<LocalDate, Integer> getDailyPeople() {
 		return dailyPeople;
 	}
-	
+
 	/**
 	 * 특성 리스트에 해당 특성이 포함되는지 확인
 	 * 
@@ -236,11 +235,10 @@ public class Guesthouse {
 	public boolean hasFeature(String feature) {
 		return features.contains(feature);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Guesthouse [bookingId=" + bookingId + ", name=" + name + ", type=" + type + ", pricePerDays="
-				+ pricePerDays + ", maxPeople=" + maxPeople  + ", description="
-				+ description + "]";
+				+ pricePerDays + ", maxPeople=" + maxPeople + ", description=" + description + "]";
 	}
 }

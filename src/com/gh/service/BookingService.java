@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.gh.exception.BookingCancelledException;
+import com.gh.exception.BookingNotFoundException;
 import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
@@ -32,23 +33,26 @@ public interface BookingService {
 	 * @param bookingId 삭제할 예약의 고유 식별자
 	 * @throws BookingCancelledException
 	 * @throws InsufficientBalanceException
+	 * @throws BookingNotFoundException 
 	 */
-	void deleteBooking(Customer c, String bookingId) throws BookingCancelledException, InsufficientBalanceException;
+	void deleteBooking(Customer c, String bookingId) throws BookingCancelledException, InsufficientBalanceException, BookingNotFoundException;
 
 	/**
 	 * 기존 예약 정보를 수정합니다.
 	 *
 	 * @param b 수정할 예약 객체. bookingId를 포함해야 하며, 해당 ID의 예약이 존재해야 합니다.
 	 * @throws InsufficientBalanceException
+	 * @throws BookingCancelledException 
 	 */
-	void updateBooking(Customer c, Booking b) throws InsufficientBalanceException;
+	void updateBooking(Customer c, Booking b) throws InsufficientBalanceException, BookingCancelledException, BookingCancelledException;
 
 	/**
 	 * 예약 조회
 	 * 
 	 * @param booginId
+	 * @throws BookingCancelledException 
 	 */
-	Booking findBooking(int bookingId);
+	Booking findBooking(int bookingId) throws BookingCancelledException, BookingCancelledException;
 
 	/**
 	 * 해당 고객의 예약 정보 조회합니다.
