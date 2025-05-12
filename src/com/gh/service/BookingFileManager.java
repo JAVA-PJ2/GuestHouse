@@ -1,7 +1,6 @@
 package com.gh.service;
 
 import java.io.BufferedReader;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +17,8 @@ import com.gh.user.Customer;
 
 /**
  * BookingFileManager는 고객의 예약 정보를 CSV 파일에 저장하고 불러오는 기능을 제공한다.
+ * 
+ * @author 소유나, 우승환, 양준용
  */
 public class BookingFileManager {
 
@@ -119,7 +120,5 @@ public class BookingFileManager {
 		} catch (IOException e) {
 			System.out.println("[" + c.getName() + "] 예약 정보 파일 없음 또는 오류: " + e.getMessage());
 		}
-
 	}
-
 }

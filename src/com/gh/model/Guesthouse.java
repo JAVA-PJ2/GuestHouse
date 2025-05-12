@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.gh.user.Customer;
 import com.gh.service.BookingServiceImpl;
 
 /**
  * Guesthouse 클래스는 게스트하우스의 정보를 담는 엔티티 클래스입니다. 예약 ID, 이름, 타입, 가격, 최대 수용 인원, 현재
  * 인원, 설명정보를 포함합니다.
+ * 
+ * @author 우승환
  */
 public class Guesthouse {
-	private String bookingId; // 예약 고유번호//???
+	private String bookingId; // 예약 고유번호
 	private String name; // 게스트하우스 이름
 	private String type; // 게스트하우스 유형
 	private double pricePerDays; // 1박당 가격

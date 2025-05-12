@@ -2,11 +2,12 @@ package com.gh.user;
 
 /**
  * {@code Account} 클래스는 사용자 계정 정보를 나타냅니다.
+ * 
  * <p>
  * 사용자 이름과 계좌 잔액 정보를 포함하며, 예약 시스템에서 고객의 계정 정보를 관리하는 데 사용됩니다.
  * </p>
  * 
- * @author YangJunYong
+ * @author 양준용
  */
 public class Account {
 

@@ -12,14 +12,15 @@ package com.gh.exception;
  * 메시지를 지정하여 예외 상황에 대한 추가적인 설명을 제공할 수 있습니다.
  * </p>
  * 
- * @author 당신
+ * @author 소유나, 우승환, 양준용
  */
+
 @SuppressWarnings("serial")
 public class BookingNotFoundException extends Exception {
 	/**
 	 * 기본 메시지를 사용하는 생성자입니다.
 	 * <p>
-	 * 예: "예약을 찾을 수 없습니다."
+	 *	 예: "예약을 찾을 수 없습니다."
 	 * </p>
 	 */
 	public BookingNotFoundException(String message) {

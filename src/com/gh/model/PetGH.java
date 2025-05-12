@@ -6,7 +6,7 @@ package com.gh.model;
  * 반려동물의 종류, 케어 시스템 비용, 응급 대처 가능 여부 등의 정보를 포함하며, {@code Guesthouse} 클래스를 상속합니다.
  * </p>
  * 
- * @author YangJunYong
+ * @author 양준용
  */
 public class PetGH extends Guesthouse {
 

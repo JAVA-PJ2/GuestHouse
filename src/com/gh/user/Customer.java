@@ -5,15 +5,15 @@ import com.gh.model.Booking;
 
 /**
  * {@code Customer} 클래스는 고객 정보를 나타냅니다.
+ * 
  * <p>
  * 고객의 이름, 이메일, 계정 정보, 예약 목록 등을 포함합니다.
- * </p>
  * 이 클래스는 예약 시스템에서 사용자 정보를 저장하고 처리하는 데 사용됩니다.
+ * </p>
  * 
- * @author YangJunYong
+ * @author 양준용
  */
 public class Customer {
-
     /**
      * 고객 이름
      */

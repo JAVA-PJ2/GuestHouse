@@ -6,7 +6,7 @@ package com.gh.model;
  * 악기 보유 여부, 방음 여부, 악기 대여 가능 여부 등의 정보를 포함합니다.
  * </p>
  * 
- * @author YangJunYong
+ * @author 양준용
  */
 public class MusicGH extends Guesthouse {
 	/**

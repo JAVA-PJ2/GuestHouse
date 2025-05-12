@@ -11,6 +11,8 @@ import com.gh.user.Customer;
  * <p>
  * bookingId는 UUID 기반으로 고유한 값을 자동 생성합니다.
  * </p>
+ * 
+ * @author 소유나
  */
 
 public class Booking {
@@ -211,5 +213,4 @@ public class Booking {
 		return String.format("예약번호: %s | 날짜: %s ~ %s (%d박, %d명) | 숙소: %s", bookingId, startDate, endDate, bookingDays,
 				numberOfPeople, guesthouse != null ? guesthouse.getName() : "없음");
 	}
-
 }

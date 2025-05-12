@@ -17,6 +17,8 @@ import com.gh.user.Customer;
  * <p>
  * 예약 데이터를 저장소(예: DB)에 연동하거나 관리하는 비즈니스 로직의 진입점 역할을 합니다.
  * </p>
+ * 
+ * @author 소유나, 우승환, 양준용
  */
 public interface BookingService {
 	/**

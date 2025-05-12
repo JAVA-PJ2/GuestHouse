@@ -8,6 +8,8 @@ import com.gh.user.Customer;
 
 /**
  * 예약 통계 및 분석기능을 제공합니다 가격 프로모션, 추천숙소, 예약률 계산등의 기능이 포함됩니다.
+ * 
+ * @author 소유나, 우승환, 양준용
  */
 public interface AnalyticsService {
 

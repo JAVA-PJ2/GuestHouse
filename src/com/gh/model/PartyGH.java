@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * 이 클래스는 {@code Guesthouse}를 상속하며, 모든 인스턴스에 공통적으로 적용되는 파티 참여를 위한 최소 연령을 관리합니다.
  * </p>
  * 
- * @author YangJunYong
+ * @author 양준용
  */
 public class PartyGH extends Guesthouse {
 

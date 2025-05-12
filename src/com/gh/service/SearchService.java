@@ -6,6 +6,17 @@ import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.user.Customer;
 
+/**
+ * {@code SearchService} 인터페이스는 예약 시스템 내에서 검색 기능을 정의합니다.
+ * 
+ * <p>
+ * 고객의 예약 내역 조회, 특정 게스트하우스의 예약 내역 확인, 
+ * 게스트하우스의 기능(feature) 존재 여부 확인 등 검색 관련 메서드를 제공합니다.
+ * </p>
+ * 
+ * @author 소유나, 우승환, 양준용
+ */
+
 public interface SearchService extends GHService {
 	/**
 	 * 고객의 예약 정보를 검색합니다.
@@ -31,5 +42,4 @@ public interface SearchService extends GHService {
 	 * @return 해당 기능이 포함된 여부로 true: 존재함, false: 없음
 	 */
 	boolean hasFeature(Guesthouse gh, String feature);
-
 }

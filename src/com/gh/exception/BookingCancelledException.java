@@ -14,6 +14,7 @@ package com.gh.exception;
  * 
  * @author 소유나, 양준용, 우승환
  */
+
 @SuppressWarnings("serial")
 public class BookingCancelledException extends Exception {
 	/**

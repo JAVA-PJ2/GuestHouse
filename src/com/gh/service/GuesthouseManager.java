@@ -9,6 +9,17 @@ import java.util.Map;
 import com.gh.model.Guesthouse;
 import com.gh.user.Customer;
 
+/**
+ * {@code GuesthouseManager} 클래스는 게스트하우스 관련 비즈니스 로직을 담당하는 서비스 클래스입니다.
+ * 
+ * <p>
+ * 고객의 예약 내역을 기반으로 한 추천 기능, 특정 날짜의 예약률 계산, 특정 타입의 게스트하우스 존재 여부
+ * 확인 등의 기능을 제공합니다.
+ * </p>
+ * 
+ * @author 소유나, 양준용, 우승환
+ */
+
 public class GuesthouseManager {
 	/**
 	 * 가중치 기반 추천 숙소 리스트 반환

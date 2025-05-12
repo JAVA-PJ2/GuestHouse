@@ -9,7 +9,7 @@ import com.gh.model.Booking;
  * GHService 인터페이스는 예약 관련 주요 기능을 정의합니다. 기능에는 예약 가능 여부 확인, 월 매출 계산, 개별 예약 조회가
  * 포함됩니다.
  * 
- * @author YangJunYong
+ * @author 소유나, 우승환, 양준용
  */
 public interface GHService {
 
