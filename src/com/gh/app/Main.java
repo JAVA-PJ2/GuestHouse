@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.gh.exception.BookingCancelledException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
@@ -161,11 +162,16 @@ public class Main {
 				String confirm = sc.nextLine().trim().toUpperCase();
 
 				if (confirm.equals("Y")) {
-					service.deleteBooking(customer, toCancel.getBookingId());
-					cancelList.remove(cancelIndex);
+				    try {
+				        service.deleteBooking(customer, toCancel.getBookingId());
+				        cancelList.remove(cancelIndex); // 예외 없을 때만 삭제
+				    } catch (BookingCancelledException e) {
+				        System.out.println("[오류] " + e.getMessage());
+				    }
 				} else {
-					System.out.println("예약 취소가 취소되었습니다.");
+				    System.out.println("예약 취소가 취소되었습니다.");
 				}
+
 				break;
 
 			case 4:

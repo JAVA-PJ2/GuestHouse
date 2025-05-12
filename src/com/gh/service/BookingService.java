@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.gh.exception.BookingCancelledException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.user.Customer;
@@ -25,8 +26,9 @@ public interface BookingService {
      * 예약 ID를 기반으로 기존 예약을 삭제합니다.
      *
      * @param bookingId 삭제할 예약의 고유 식별자
+	 * @throws BookingCancelledException 
      */
-	void deleteBooking(Customer c, String bookingId);
+	void deleteBooking(Customer c, String bookingId) throws BookingCancelledException;
 	
 	/**
      * 기존 예약 정보를 수정합니다.

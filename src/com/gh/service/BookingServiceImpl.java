@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.gh.exception.BookingCancelledException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.user.Account;
@@ -89,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
 
 	}
 
-	public void deleteBooking(Customer c, String bookingId) {
+	public void deleteBooking(Customer c, String bookingId) throws BookingCancelledException {
 		Booking target = null;
 
 		// 예약 ID로 예약 찾기
@@ -108,8 +109,7 @@ public class BookingServiceImpl implements BookingService {
 
 		// 이미 취소된 예약이면 메시지 출력 후 종료
 		if (target.getIsCancled()) {
-			System.out.println("이미 취소된 예약입니다.");
-			return;
+			throw new BookingCancelledException("취소된 예약은 변경이나 재취소가 불가능합니다.");
 		}
 
 		// 취소 가능 날짜인지 확인 (체크인 3일 전까지 가능)
@@ -117,8 +117,7 @@ public class BookingServiceImpl implements BookingService {
 		LocalDate checkIn = target.getStartDate();
 
 		if (!today.isBefore(checkIn.minusDays(2))) {
-			System.out.println("체크인 3일 전까지만 예약 취소가 가능합니다.");
-			return;
+			throw new BookingCancelledException("체크인 3일 전 이후에는 취소가 불가능합니다.");
 		}
 
 		// 고객, 게스트하우스, 계좌 정보 불러오기
