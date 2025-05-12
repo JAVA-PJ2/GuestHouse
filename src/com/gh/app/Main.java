@@ -12,12 +12,15 @@ import com.gh.model.MusicGH;
 import com.gh.model.PartyGH;
 import com.gh.model.PetGH;
 import com.gh.service.BookingServiceImpl;
+import com.gh.service.GuesthouseManager;
 import com.gh.user.Account;
 import com.gh.user.Customer;
 
 public class Main {
 	private static final Scanner sc = new Scanner(System.in);
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
+	private static final GuesthouseManager manager = new GuesthouseManager();
+
 
 	public static void main(String[] args) {
 		// 게스트하우스 생성
@@ -60,7 +63,8 @@ public class Main {
 			System.out.println("3. 예약 취소하기");
 			System.out.println("4. 이 고객의 모든 예약 조회하기");
 			System.out.println("5. 추천 숙소 리스트");
-			System.out.println("6. 종료");
+			System.out.println("6. 특정 날짜의 전체 예약률 확인");
+			System.out.println("7. 종료");
 			System.out.print("번호를 선택하세요: ");
 
 			int choice = Integer.parseInt(sc.nextLine());
@@ -188,8 +192,16 @@ public class Main {
 			        }
 			    }
 			    break;
-
 			case 6:
+				System.out.print("예약률을 확인할 날짜를 입력하세요 (yyyy-mm-dd): ");
+				LocalDate checkDate = LocalDate.parse(sc.nextLine());
+
+				double rate = manager.calcReservationRate(gh, checkDate);
+				System.out.printf("[%s] 전체 예약률: %.2f%%\n", checkDate, rate);
+				break;
+
+
+			case 7:
 				System.out.println("프로그램을 종료합니다.");
 				System.exit(0);
 
