@@ -1,7 +1,9 @@
 package com.gh.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.gh.user.Customer;
 import com.gh.service.BookingServiceImpl;
@@ -11,7 +13,7 @@ import com.gh.service.BookingServiceImpl;
  * 인원, 설명정보를 포함합니다.
  */
 public class Guesthouse {
-	private String bookingId; // 예약 고유번호
+	private String bookingId; // 예약 고유번호//???
 	private String name; // 게스트하우스 이름
 	private String type; // 게스트하우스 유형
 	private double pricePerDays; // 1박당 가격
@@ -19,6 +21,7 @@ public class Guesthouse {
 	private String description; // 게스트하우스 설명
 	private double totalSales; // 게스트하우스의 총 매출
 	private Map<LocalDate, Integer> dailyPeople = new HashMap<>();
+	private List<String> features = new ArrayList<>(); // 게스트하우스 특성 목록 (예: 음악, 반려동물, 파티 등)
 
 	/**
 	 * 기본 생성자
@@ -223,7 +226,17 @@ public class Guesthouse {
 	public Map<LocalDate, Integer> getDailyPeople() {
 		return dailyPeople;
 	}
-
+	
+	/**
+	 * 특성 리스트에 해당 특성이 포함되는지 확인
+	 * 
+	 * @param feature 확인할 특성
+	 * @return 해당 특성이 포함되어있으면 true, 없으면 false
+	 */
+	public boolean hasFeature(String feature) {
+		return features.contains(feature);
+	}
+	
 	@Override
 	public String toString() {
 		return "Guesthouse [bookingId=" + bookingId + ", name=" + name + ", type=" + type + ", pricePerDays="

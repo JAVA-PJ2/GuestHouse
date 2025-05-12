@@ -5,28 +5,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.gh.exception.BookingCancelledException;
+import com.gh.exception.InsufficientBalanceException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
 import com.gh.model.PartyGH;
 import com.gh.model.PetGH;
+import com.gh.service.BookingFileManager;
 import com.gh.service.BookingServiceImpl;
+import com.gh.service.GuesthouseManager;
 import com.gh.user.Account;
 import com.gh.user.Customer;
 
 public class Main {
 	private static final Scanner sc = new Scanner(System.in);
 	private static final BookingServiceImpl service = BookingServiceImpl.getInstance();
+	private static final GuesthouseManager manager = new GuesthouseManager();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InsufficientBalanceException {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));
-		gh.add(new PetGH("GH002", "펫팰리스 도그하우스", "반려견", 80.0, 3, 0, "중형견 전용, 응급대응 지원", 30.0, null, true));
-		gh.add(new PetGH("GH003", "펫팰리스 캣하우스", "반려묘", 75.0, 2, 0, "고양이 전용, 조용한 실내", 25.0, null, false));
+		gh.add(new PetGH("GH002", "펫팰리스 도그하우스", "반려동물", 80.0, 3, 0, "중형견 전용, 응급대응 지원", 30.0, null, true));
+		gh.add(new PetGH("GH003", "펫팰리스 캣하우스", "반려동물", 75.0, 2, 0, "고양이 전용, 조용한 실내", 25.0, null, false));
 		gh.add(new PartyGH("GH004", LocalDate.now(), LocalDate.now().plusDays(1), 1, 1, null, "파티존 루프탑", "파티", 150.0,
 				10, 0, "루프탑 파티 공간, DJ 부스 완비", 19));
-		gh.add(new Guesthouse("GH005", "일반 게스트하우스", "일반", 50.0, 4, 0, "저렴하고 깨끗한 일반 숙소"));
+		gh.add(new Guesthouse("GH005", "일반 게스트하우스", "파티", 50.0, 4, 0, "저렴하고 깨끗한 일반 숙소"));
 
 		// 고객 생성
 		List<Customer> customers = new ArrayList<>();
@@ -49,6 +54,9 @@ public class Main {
 			if (customer == null)
 				System.out.println("등록되지 않은 고객입니다. 다시 입력하세요.\n");
 		}
+		
+		// 저장된 예약 내역 불러오기
+		BookingFileManager.loadBookings(customer, gh);
 
 		// CRUD 메뉴
 		while (true) {
@@ -59,7 +67,8 @@ public class Main {
 			System.out.println("3. 예약 취소하기");
 			System.out.println("4. 이 고객의 모든 예약 조회하기");
 			System.out.println("5. 추천 숙소 리스트");
-			System.out.println("6. 종료");
+			System.out.println("6. 특정 날짜의 전체 예약률 확인");
+			System.out.println("7. 종료");
 			System.out.print("번호를 선택하세요: ");
 
 			int choice = Integer.parseInt(sc.nextLine());
@@ -86,7 +95,11 @@ public class Main {
 
 				Booking newBooking = new Booking(startDate, days, people, selectedGH);
 //				customer.getBookings().add(newBooking);
-				service.addBooking(customer, newBooking);
+				try {
+					service.addBooking(customer, newBooking);
+				} catch (InsufficientBalanceException e) {
+					System.out.println("[예약 실패]" + e.getMessage());
+				}
 				break;
 
 			case 2:
@@ -126,7 +139,11 @@ public class Main {
 				Booking modified = new Booking(newStart, newDays, newPeople, selected.getGuesthouse());
 				modified.setBookingId(selected.getBookingId());
 
-				service.updateBooking(customer, modified);
+				try {
+					service.updateBooking(customer, modified);
+				} catch (InsufficientBalanceException e) {
+					System.out.println("[예약 변경 실패]" + e.getMessage());
+				}
 				break;
 
 			case 3: // 예약 취소
@@ -158,11 +175,16 @@ public class Main {
 				String confirm = sc.nextLine().trim().toUpperCase();
 
 				if (confirm.equals("Y")) {
-					service.deleteBooking(customer, toCancel.getBookingId());
-					cancelList.remove(cancelIndex);
+					try {
+						service.deleteBooking(customer, toCancel.getBookingId());
+						cancelList.remove(cancelIndex); // 예외 없을 때만 삭제
+					} catch (BookingCancelledException e) {
+						System.out.println("[오류] " + e.getMessage());
+					}
 				} else {
 					System.out.println("예약 취소가 취소되었습니다.");
 				}
+
 				break;
 
 			case 4:
@@ -173,18 +195,6 @@ public class Main {
 				break;
 
 			case 5:
-<<<<<<< Updated upstream
-				List<Guesthouse> recommended = service.getRecommendedByGH(customer);
-			    if (recommended.isEmpty()) {
-			        System.out.println("추천할 숙소가 없습니다.");
-			    } else {
-			        for (Guesthouse g : recommended) {
-			            System.out.println(g.getName());
-			        }
-			    }
-			    break;
-
-=======
 				List<Guesthouse> recommended = service.getRecommendedByGH(gh, customer);
 				if (recommended.isEmpty()) {
 					System.out.println("추천할 숙소가 없습니다.");
@@ -194,8 +204,15 @@ public class Main {
 					}
 				}
 				break;
->>>>>>> Stashed changes
+
 			case 6:
+				System.out.print("예약률을 확인할 날짜를 입력하세요 (yyyy-mm-dd): ");
+				LocalDate checkDate = LocalDate.parse(sc.nextLine());
+				double rate = manager.calcReservationRate(gh, checkDate);
+				System.out.printf("[%s] 전체 예약률: %.2f%%\n", checkDate, rate);
+				break;
+
+			case 7:
 				System.out.println("프로그램을 종료합니다.");
 				System.exit(0);
 

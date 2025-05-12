@@ -1,5 +1,6 @@
 package com.gh.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,4 +49,39 @@ public class GuesthouseManager {
         sorted.sort((gh1, gh2) -> Double.compare(weightMap.get(gh2), weightMap.get(gh1)));
         return sorted;
     }
+    
+    /**
+     * 특정 날짜의 전체 예약률을 계산합니다.
+     * 
+     * @param guesthouses 예약 대상 게스트하우스 목록
+     * @param date 예약률을 계산할 날짜
+     * @return 예약률 (0.0 ~ 100.0)
+     */
+    public double calcReservationRate(List<Guesthouse> guesthouses, LocalDate date) {
+        int totalCapacity = 0;
+        int totalReserved = 0;
+
+        for (Guesthouse gh : guesthouses) {
+            totalCapacity += gh.getMaxPeople(); // 해당 게하 최대 수용 인원
+
+            int reserved = gh.getDailyPeople().getOrDefault(date, 0); // 해당 날짜 예약 인원
+            totalReserved += reserved;
+        }
+
+        if (totalCapacity == 0) return 0.0;
+
+        return (double) totalReserved / totalCapacity * 100;
+    }
+    
+    /**
+     * 특정 게하의 존재 여부 구현
+     * 
+     * @param gh
+     * @param feature
+     * @return
+     */
+    public boolean hasFeature(Guesthouse gh, String feature) {
+    	return gh.hasFeature(feature);
+    }
+
 }
