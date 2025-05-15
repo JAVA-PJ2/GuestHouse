@@ -39,3 +39,90 @@ Jira, Github 협업, JAVA OOP와 CRUD, lambda 리팩토링 위주의 팀 프로�
 
 ## 👤 GH Service의 UML
 <img width="3328" alt="자바 프로젝트 - 2조 (8)" src="https://github.com/user-attachments/assets/954b9c25-bdfa-4732-a9b5-afcc06f18e6a" />
+
+## JIRA 협업 방식
+![image](https://github.com/user-attachments/assets/3a6d6ae8-e1aa-4e83-991f-0e357fe56d1f)
+- 대주제로 에픽을 파고 하위 항목으로 기능별 분리
+- 담당자와 기한 지정
+- 작업 완료 후 깃허브 이슈, PR 번호 기입과 작업 완료 코멘트 후 담당자 변경
+- 할당된 담당자가 검토 후 완료 처리
+![image](https://github.com/user-attachments/assets/69fd868f-14e9-4635-94a8-c13c19243a78)
+
+## GITHUB 협업 방식
+![image](https://github.com/user-attachments/assets/a4aa95ce-cee1-4d18-aa88-361d6a58f935)
+- 이슈 : jira 이슈번호 ex) GHS-25 이슈명
+- PR : jira 이슈번호 + 깃허브 이슈번호 ex) GHS-25#30
+- 브랜치
+  - main : 서비스 및 merge 브랜치
+  - jira 이슈번호 + 깃허브 이슈번호 ex) GHS-25#30 : 작업 브랜치
+
+## 디렉토리 구조
+```plaintext
+📦 GuestHouse/
+┣ 📂 src/
+┃ ┣ 📂 com.gh.app
+┃ ┃ ┗ 📄 Main.java
+┃ ┣ 📂 com.gh.exception
+┃ ┃ ┣ 📄 BookingCancelledException.java
+┃ ┃ ┣ 📄 BookingNotFoundException.java
+┃ ┃ ┣ 📄 InsufficientBalanceException.java
+┃ ┃ ┗ 📄 NoSuchElementException.java
+┃ ┣ 📂 com.gh.model
+┃ ┃ ┣ 📄 Booking.java
+┃ ┃ ┣ 📄 Guesthouse.java
+┃ ┃ ┣ 📄 MusicGH.java
+┃ ┃ ┣ 📄 PartyGH.java
+┃ ┃ ┗ 📄 PetGH.java
+┃ ┣ 📂 com.gh.service
+┃ ┃ ┣ 📄 AnalyticsService.java
+┃ ┃ ┣ 📄 BookingFileManager.java
+┃ ┃ ┣ 📄 BookingService.java
+┃ ┃ ┣ 📄 BookingServiceImpl.java
+┃ ┃ ┣ 📄 GHService.java
+┃ ┃ ┣ 📄 GuesthouseManager.java
+┃ ┃ ┗ 📄 SearchService.java
+┃ ┗ 📂 com.gh.user
+┃ ┃ ┣ 📄 Account.java
+┃ ┃ ┗ 📄 Customer.java
+┣ 📄 README.md
+```
+
+## 👩‍💻 Contributor 👨‍💻
+
+<table>
+  <tr>
+    <td align="center" width="150px">
+      <a href="https://github.com/seacrab808" target="_blank">
+        <img src="" alt="소유나 프로필" />
+      </a>
+    </td>
+    <td align="center" width="150px">
+      <a href="https://github.com/azure0929" target="_blank">
+        <img src="" alt="양준용 프로필" />
+      </a>
+    </td>
+    <td align="center" width="150px">
+      <a href="https://github.com/seacrab808" target="_blank">
+        <img src="" alt="우승환 프로필" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="https://seacrab.tistory.com/" target="_blank">
+        소유나
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://velog.io/@azure0929/posts"_blank">
+        양준용
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://wsh2379.tistory.com/" target="_blank">
+        우승환
+      </a>
+    </td>
+  </tr>
+</table>
+  
