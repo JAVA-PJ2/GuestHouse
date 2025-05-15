@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import com.gh.exception.BookingCancelledException;
 import com.gh.exception.BookingNotFoundException;
@@ -131,6 +133,7 @@ public class Main {
 			int choice = Integer.parseInt(sc.nextLine());
 
 			switch (choice) {
+			/*  리팩토링 전 코드
 				case 1:
 					System.out.println("\n[예약 가능한 게스트하우스 목록]");
 					for (int i = 0; i < gh.size(); i++) {
@@ -169,6 +172,56 @@ public class Main {
 						System.out.println("[예약 실패]" + e.getMessage());
 					}
 					break;
+					*/
+			
+			case 1:
+			    System.out.println("\n[예약 가능한 게스트하우스 목록]");
+			    IntStream.range(0, gh.size())
+			             .forEach(i -> System.out.println((i + 1) + ". " + gh.get(i).getName() + " - " + gh.get(i).getDescription()));
+
+			    System.out.print("예약할 게스트하우스 번호: ");
+			    int ghChoice = Integer.parseInt(sc.nextLine()) - 1;
+
+			    Optional<Guesthouse> selectedGHOpt = Optional.ofNullable(
+			        gh.stream().skip(ghChoice).findFirst().orElse(null)
+			    );
+
+			    if (selectedGHOpt.isEmpty()) {
+			        System.out.println("[오류] 선택한 게스트하우스가 없습니다.");
+			        break;
+			    }
+
+			    Guesthouse selectedGH = selectedGHOpt.get();
+
+			    LocalDate startDate = null;
+			    while (startDate == null) {
+			        System.out.print("시작 날짜 입력 (yyyy-MM-dd): ");
+			        String input = sc.nextLine().trim();
+			        try {
+			            startDate = Optional.of(LocalDate.parse(input))
+			                                .filter(date -> !date.isBefore(LocalDate.now()))
+			                                .orElseThrow(() -> new IllegalArgumentException("[오류] 현재 날짜 이후만 예약 가능합니다."));
+			        } catch (Exception e) {
+			            System.out.println(e.getMessage());
+			            startDate = null;
+			        }
+			    }
+
+			    System.out.print("숙박일수 입력: ");
+			    int days = Integer.parseInt(sc.nextLine());
+
+			    System.out.print("인원 수 입력: ");
+			    int people = Integer.parseInt(sc.nextLine());
+
+			    Booking newBooking = new Booking(startDate, days, people, selectedGH);
+			    try {
+			        service.addBooking(customer, newBooking);
+			    } catch (InsufficientBalanceException e) {
+			        System.out.println("[예약 실패]" + e.getMessage());
+			    }
+			    break;
+
+	
 	
 				/**
 				 * 예약 변경
