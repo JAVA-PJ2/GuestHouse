@@ -89,6 +89,6 @@ Jira, Github 협업, JAVA OOP와 CRUD, lambda 리팩토링 위주의 팀 프로�
 
 ## 👩‍💻 Contributor 👨‍💻
 
-| ![소유나](https://avatars.githubusercontent.com/seacrab808?s=100) | ![양준용](https://avatars.githubusercontent.com/azure0929?s=100) | ![우승환](https://avatars.githubusercontent.com/seacrab808?s=100) |
+| ![소유나](https://avatars.githubusercontent.com/seacrab808?s=100) | ![양준용](https://avatars.githubusercontent.com/azure0929?s=100) | ![우승환](https://avatars.githubusercontent.com/WooSeungHwan?s=100) |
 |:---:|:---:|:---:|
 | [소유나](https://seacrab.tistory.com/) <br> [GitHub](https://github.com/seacrab808) | [양준용](https://velog.io/@azure0929/posts) <br> [GitHub](https://github.com/azure0929) | [우승환](https://wsh2379.tistory.com/) <br> [GitHub](https://github.com/WooSeungHwan) |
