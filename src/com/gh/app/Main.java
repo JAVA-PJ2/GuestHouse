@@ -1,14 +1,17 @@
 package com.gh.app;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gh.exception.BookingCancelledException;
 import com.gh.exception.BookingNotFoundException;
 import com.gh.exception.InsufficientBalanceException;
+import com.gh.exception.NoSuchElementException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
@@ -54,9 +57,24 @@ public class Main {
 	 * @throws InsufficientBalanceException 잔액 부족 시 발생
 	 * @throws BookingNotFoundException     예약을 찾지 못한 경우 발생
 	 * @throws BookingCancelledException    이미 취소된 예약에 접근한 경우 발생
+	 * @throws NoSuchElementException 
+	 */
+	/**
+	 * @param args
+	 * @throws InsufficientBalanceException
+	 * @throws BookingNotFoundException
+	 * @throws BookingCancelledException
+	 * @throws NoSuchElementException
+	 */
+	/**
+	 * @param args
+	 * @throws InsufficientBalanceException
+	 * @throws BookingNotFoundException
+	 * @throws BookingCancelledException
+	 * @throws NoSuchElementException
 	 */
 	public static void main(String[] args)
-			throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException {
+			throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException, NoSuchElementException {
 		// 게스트하우스 생성
 		List<Guesthouse> gh = new ArrayList<>();
 		gh.add(new MusicGH("GH001", "뮤직존 스튜디오", "음악", 100.0, 5, 0, "방음 완비, 드럼/기타 보유", true, true, true));
@@ -73,6 +91,7 @@ public class Main {
 		customers.add(new Customer("이영희", "lee@naver.com", new Account("lee123", 1200.0), new ArrayList<>()));
 
 		// 고객 인증
+		/* 코드 리팩토링 전
 		Customer customer = null;
 		while (customer == null) {
 			System.out.print("고객 이름을 입력하세요: ");
@@ -84,8 +103,28 @@ public class Main {
 					break;
 				}
 			}
+			
 			if (customer == null)
 				System.out.println("등록되지 않은 고객입니다. 다시 입력하세요.\n");
+		}
+		*/
+		/**
+		 * 코드 리팩토링 
+		 */
+		Customer customer = null;
+		while (customer == null) {
+			System.out.println("고객 이름을 입력하세요: ");
+			String inputName = sc.nextLine();
+			
+			try {
+				customer = customers.stream()
+						.filter(c -> c.getName().equals(inputName))
+						.findFirst()
+						.orElseThrow(() -> new NoSuchElementException("등록되지 않은 고객입니다. 다시 입력하세요.\n"));
+						
+			} catch (NoSuchElementException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 
 		// 저장된 예약 내역 불러오기
@@ -108,6 +147,90 @@ public class Main {
 			int choice = Integer.parseInt(sc.nextLine());
 
 			switch (choice) {
+				/**
+				 * 예약
+				 */
+				case 1:
+					System.out.println("\n[예약 가능한 게스트하우스 목록]");
+					for (int i = 0; i < gh.size(); i++) {
+						System.out.println((i + 1) + ". " + gh.get(i).getName() + " - " + gh.get(i).getDescription());
+					}
+	
+					System.out.print("예약할 게스트하우스 번호: ");
+					int ghChoice = Integer.parseInt(sc.nextLine()) - 1;
+					Guesthouse selectedGH = gh.get(ghChoice);
+	
+					LocalDate startDate = null;
+					while (startDate == null) {
+						System.out.print("시작 날짜 입력 (yyyy-MM-dd): ");
+						String input = sc.nextLine().trim();
+						try {
+							startDate = LocalDate.parse(input);
+							if (startDate.isBefore(LocalDate.now())) {
+								System.out.println("[오류] 현재 날짜 이후만 예약 가능합니다.");
+								startDate = null;
+							}
+						} catch (Exception e) {
+							System.out.println("[오류] 날짜 형식이 올바르지 않습니다. 예: 2025-05-12");
+						}
+					}
+	
+					System.out.print("숙박일수 입력: ");
+					int days = Integer.parseInt(sc.nextLine());
+	
+					System.out.print("인원 수 입력: ");
+					int people = Integer.parseInt(sc.nextLine());
+	
+					Booking newBooking = new Booking(startDate, days, people, selectedGH);
+					try {
+						service.addBooking(customer, newBooking);
+					} catch (InsufficientBalanceException e) {
+						System.out.println("[예약 실패]" + e.getMessage());
+					}
+					break;
+					
+				/**
+				 * 예약 변경
+				 */
+				case 2:
+					System.out.println("[예약 변경] 고객의 예약 목록:");
+					List<Booking> userBookings = customer.getBookings();
+					if (userBookings.isEmpty()) {
+						System.out.println("예약 내역이 없습니다.");
+						break;
+					}
+					for (int i = 0; i < userBookings.size(); i++) {
+						Booking b = userBookings.get(i);
+						System.out.printf("%d. [%s] %s ~ %s (%d명)\n", i + 1, b.getGuesthouse().getName(), b.getStartDate(),
+								b.getEndDate(), b.getNumberOfPeople());
+					}
+					System.out.print("변경할 예약 번호를 선택하세요: ");
+					int selection = Integer.parseInt(sc.nextLine()) - 1;
+					if (selection < 0 || selection >= userBookings.size()) {
+						System.out.println("잘못된 번호입니다.");
+						break;
+					}
+					Booking selected = userBookings.get(selection);
+					LocalDate updateStartDate = null;
+					while (updateStartDate == null) {
+						System.out.print("새 시작 날짜 입력 (yyyy-MM-dd): ");
+						String updateInput = sc.nextLine().trim();
+						try {
+							updateStartDate = LocalDate.parse(updateInput);
+							if (updateStartDate.isBefore(LocalDate.now())) {
+								System.out.println("[오류] 현재 날짜 이후만 예약 가능합니다.");
+								updateStartDate = null;
+							}
+						} catch (Exception e) {
+							System.out.println("[오류] 날짜 형식이 올바르지 않습니다. 예: 2025-05-12");
+						}
+					}
+					System.out.print("새 숙박일수 입력: ");
+					int newDays = Integer.parseInt(sc.nextLine());
+					System.out.print("새 인원 수 입력: ");
+					int newPeople = Integer.parseInt(sc.nextLine());
+					Booking modified = new Booking(updateStartDate, newDays, newPeople, selected.getGuesthouse());
+					modified.setBookingId(selected.getBookingId());
 			/**
 			 * 예약
 			 */
