@@ -89,40 +89,6 @@ Jira, Github 협업, JAVA OOP와 CRUD, lambda 리팩토링 위주의 팀 프로�
 
 ## 👩‍💻 Contributor 👨‍💻
 
-<table>
-  <tr>
-    <td align="center" width="150px">
-      <a href="https://github.com/seacrab808" target="_blank">
-        <img src="" alt="소유나 프로필" />
-      </a>
-    </td>
-    <td align="center" width="150px">
-      <a href="https://github.com/azure0929" target="_blank">
-        <img src="" alt="양준용 프로필" />
-      </a>
-    </td>
-    <td align="center" width="150px">
-      <a href="https://github.com/seacrab808" target="_blank">
-        <img src="" alt="우승환 프로필" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="https://seacrab.tistory.com/" target="_blank">
-        소유나
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://velog.io/@azure0929/posts"_blank">
-        양준용
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://wsh2379.tistory.com/" target="_blank">
-        우승환
-      </a>
-    </td>
-  </tr>
-</table>
-  
+| ![소유나](https://avatars.githubusercontent.com/seacrab808?s=100) | ![양준용](https://avatars.githubusercontent.com/azure0929?s=100) | ![우승환](https://avatars.githubusercontent.com/seacrab808?s=100) |
+|:---:|:---:|:---:|
+| [소유나](https://seacrab.tistory.com/) <br> [GitHub](https://github.com/seacrab808) | [양준용](https://velog.io/@azure0929/posts) <br> [GitHub](https://github.com/azure0929) | [우승환](https://wsh2379.tistory.com/) <br> [GitHub](https://github.com/WooSeungHwan) |
