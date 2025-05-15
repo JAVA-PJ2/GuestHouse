@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
@@ -405,10 +406,29 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		@Override
-		// 디버깅용, 추후 대기열 리스트 출력 가능
+		// 디버깅용, 추후 대기열 리스트 출력 가능 (리팩토링 전 코드)
+//		public String toString() {
+//			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
+//					+ booking.getNumberOfPeople() + "]";
+//		}
+		
+		// Optional로 null-safe 리팩토링 진행 후 코드
 		public String toString() {
-			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
-					+ booking.getNumberOfPeople() + "]";
+			String customerName = Optional.ofNullable(customer)
+					.map(Customer::getName)
+					.orElse("'고객정보 없음'");
+			
+			String numberOfPeople = Optional.ofNullable(booking)
+					.map(Booking::getNumberOfPeople) // int
+					.map(String::valueOf) // String
+					.orElse("'인원 정보 없음'");
+			
+			String rqTime = Optional.ofNullable(requestDateTime)
+					.map(String::valueOf)
+					.orElse("'시간 정보 없음'");
+			
+			return "예약 대기열 : [고객=" + customerName + ", 요청일=" + rqTime + ", 인원="
+					+ numberOfPeople + "]";
 		}
 	}
 
