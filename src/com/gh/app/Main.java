@@ -266,12 +266,20 @@ public class Main {
 					}
 	
 					System.out.println("[예약 취소] 고객의 예약 목록:");
+					/* 코드 리팩토링 전
 					for (int i = 0; i < cancelList.size(); i++) {
 						Booking b = cancelList.get(i);
 						System.out.printf("%d. [%s] %s ~ %s (%d명)\n", i + 1, b.getGuesthouse().getName(), b.getStartDate(),
 								b.getEndDate(), b.getNumberOfPeople());
 					}
-	
+					*/
+					/**
+					 * 코드 리팩토링
+					 */
+					AtomicInteger index = new AtomicInteger(0);
+					cancelList.forEach(b -> System.out.printf("%d. [%s] %s ~ %s (%d명)\n", index.getAndIncrement(), b.getGuesthouse().getName(), b.getStartDate(),
+								b.getEndDate(), b.getNumberOfPeople()));
+					
 					System.out.print("취소할 예약 번호를 선택하세요: ");
 					int cancelIndex = Integer.parseInt(sc.nextLine()) - 1;
 	
