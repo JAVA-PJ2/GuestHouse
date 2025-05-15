@@ -1,17 +1,15 @@
 package com.gh.app;
 
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gh.exception.BookingCancelledException;
 import com.gh.exception.BookingNotFoundException;
 import com.gh.exception.InsufficientBalanceException;
-import com.gh.exception.NoSuchElementException;
 import com.gh.model.Booking;
 import com.gh.model.Guesthouse;
 import com.gh.model.MusicGH;
@@ -58,20 +56,6 @@ public class Main {
 	 * @throws BookingNotFoundException     예약을 찾지 못한 경우 발생
 	 * @throws BookingCancelledException    이미 취소된 예약에 접근한 경우 발생
 	 * @throws NoSuchElementException 
-	 */
-	/**
-	 * @param args
-	 * @throws InsufficientBalanceException
-	 * @throws BookingNotFoundException
-	 * @throws BookingCancelledException
-	 * @throws NoSuchElementException
-	 */
-	/**
-	 * @param args
-	 * @throws InsufficientBalanceException
-	 * @throws BookingNotFoundException
-	 * @throws BookingCancelledException
-	 * @throws NoSuchElementException
 	 */
 	public static void main(String[] args)
 			throws InsufficientBalanceException, BookingNotFoundException, BookingCancelledException, NoSuchElementException {
@@ -310,6 +294,7 @@ public class Main {
 				/**
 				 * 추천 숙소 리스트
 				 */
+					/* 	 리팩토링 전 코드
 				case 5:
 					List<Guesthouse> recommended = service.getRecommendedByGH(gh, customer);
 					if (recommended.isEmpty()) {
@@ -320,7 +305,19 @@ public class Main {
 						}
 					}
 					break;
-	
+	*/
+				case 5:
+					List<Guesthouse> recommended = service.getRecommendedByGH(gh, customer);
+					
+					if(recommended.isEmpty()) {
+						System.out.println("추천할 숙소가 없습니다.");
+					} else {
+						recommended.stream()
+									.map(Guesthouse::getName)
+									.forEach(System.out::println);
+					}
+					break;
+
 				/**
 				 * 예약률 확인 가능한 게스트하우스 목록
 				 */
