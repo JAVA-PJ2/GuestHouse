@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
@@ -405,10 +406,23 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		@Override
-		// 디버깅용, 추후 대기열 리스트 출력 가능
+		// 디버깅용, 추후 대기열 리스트 출력 가능 (리팩토링 전 코드)
+//		public String toString() {
+//			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
+//					+ booking.getNumberOfPeople() + "]";
+//		}
+
+		// Optional로 null-safe 리팩토링 진행 후 코드
 		public String toString() {
-			return "예약 대기열 : [고객=" + customer.getName() + ", 요청일=" + requestDateTime + ", 인원="
-					+ booking.getNumberOfPeople() + "]";
+			String customerName = Optional.ofNullable(customer).map(Customer::getName).orElse("'고객정보 없음'");
+
+			String numberOfPeople = Optional.ofNullable(booking).map(Booking::getNumberOfPeople) // int
+					.map(String::valueOf) // String
+					.orElse("'인원 정보 없음'");
+
+			String rqTime = Optional.ofNullable(requestDateTime).map(String::valueOf).orElse("'시간 정보 없음'");
+
+			return "예약 대기열 : [고객=" + customerName + ", 요청일=" + rqTime + ", 인원=" + numberOfPeople + "]";
 		}
 	}
 
@@ -444,51 +458,84 @@ public class BookingServiceImpl implements BookingService {
 	 * @throws InsufficientBalanceException 예약에 필요한 잔액이 부족할 경우
 	 */
 	@Override
-	public void processWaitingList() throws InsufficientBalanceException {
-		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.
-		// 취소해서 최대 수용 인원 - 현재 수용 인원으로 빈자리가 발생했을 경우, 우선순위큐의 대기열에 우선순위가 높은 예약부터 빈자리에 자동
-		// 예약이 된다.
-		//
-		// 만약, 빈자리가 1개인데, 우선순위가 1순위가 2명, 2순위가 1명일 경우 2순위가 자동으로 예약된다.
-		// 이 메소드에서 addBooking 메소드를 호출해서 메소드 재사용하고 코드 길이를 줄이는게 좋을 것 같다.
+	// 리팩토링 전 코드
+//	public void processWaitingList() throws InsufficientBalanceException {
+//		// 이 메소드는 deleteBooking에서 취소가 발생했을 경우 호출해서 실행되는 메소드이다.
+//		// 취소해서 최대 수용 인원 - 현재 수용 인원으로 빈자리가 발생했을 경우, 우선순위큐의 대기열에 우선순위가 높은 예약부터 빈자리에 자동
+//		// 예약이 된다.
+//		//
+//		// 만약, 빈자리가 1개인데, 우선순위가 1순위가 2명, 2순위가 1명일 경우 2순위가 자동으로 예약된다.
+//		// 이 메소드에서 addBooking 메소드를 호출해서 메소드 재사용하고 코드 길이를 줄이는게 좋을 것 같다.
+//
+//		// 대기열이 비어있으면 처리할 필요 없음
+//		if (waitingList.isEmpty()) {
+//			return;
+//		}
+//
+//		// 대기열 순서대로 순회하면서 처리 가능한 예약 찾기
+//		List<WaitingRequest> skipped = new ArrayList<>();
+//		boolean hasBooked = false;
+//
+//		while (!waitingList.isEmpty()) {
+//			WaitingRequest req = waitingList.poll(); // 우선순위 가장 높은 요청 꺼내기
+//			Customer customer = req.customer;
+//			Booking booking = req.booking;
+//			Guesthouse gh = booking.getGuesthouse();
+//
+//			int people = booking.getNumberOfPeople();
+//			LocalDate startDate = booking.getStartDate();
+//			LocalDate endDate = booking.getEndDate();
+//
+//			// 해당 예약이 게스트하우스에 들어갈 수 있는지 확인
+//			if (gh.canBook(startDate, endDate, people)) {
+//				System.out.println("========================");
+//				System.out.println("대기열 자동 예약 처리 중...");
+//				addBooking(customer, booking); // 예약 확정
+//				hasBooked = true;
+//			} else {
+//				// 현재는 못 넣지만, 나중에 다시 넣기 위해 보관
+//				skipped.add(req);
+//			}
+//		}
+//
+//		// 처리하지 못한 요청들을 다시 대기열로 복구
+//		waitingList.addAll(skipped); // 어차피 걍 넣어도 우선순위 기준으로 정렬 됨
+//
+//		if (!hasBooked) {
+//			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
+//		}
+//
+//	}
 
-		// 대기열이 비어있으면 처리할 필요 없음
-		if (waitingList.isEmpty()) {
-			return;
-		}
+	public void processWaitingList() {
+	    if (waitingList.isEmpty()) return;
 
-		// 대기열 순서대로 순회하면서 처리 가능한 예약 찾기
-		List<WaitingRequest> skipped = new ArrayList<>();
-		boolean hasBooked = false;
+	    boolean[] hasBooked = {false};
 
-		while (!waitingList.isEmpty()) {
-			WaitingRequest req = waitingList.poll(); // 우선순위 가장 높은 요청 꺼내기
-			Customer customer = req.customer;
-			Booking booking = req.booking;
-			Guesthouse gh = booking.getGuesthouse();
+	    waitingList.removeIf(req -> {
+	        Booking booking = req.booking;
+	        Guesthouse gh = booking.getGuesthouse();
 
-			int people = booking.getNumberOfPeople();
-			LocalDate startDate = booking.getStartDate();
-			LocalDate endDate = booking.getEndDate();
+	        boolean available = gh.canBook(booking.getStartDate(), booking.getEndDate(), booking.getNumberOfPeople());
 
-			// 해당 예약이 게스트하우스에 들어갈 수 있는지 확인
-			if (gh.canBook(startDate, endDate, people)) {
-				System.out.println("========================");
-				System.out.println("대기열 자동 예약 처리 중...");
-				addBooking(customer, booking); // 예약 확정
-				hasBooked = true;
-			} else {
-				// 현재는 못 넣지만, 나중에 다시 넣기 위해 보관
-				skipped.add(req);
-			}
-		}
+	        if (available) {
+	            System.out.println("========================");
+	            System.out.println("대기열 자동 예약 처리 중...");
+	            try {
+	                addBooking(req.customer, booking);
+	                hasBooked[0] = true;
+	                return true; // 예약 성공 → 큐에서 제거
+	            } catch (InsufficientBalanceException e) {
+	                e.printStackTrace(); // 실패해도 큐 유지
+	            }
+	        }
+	        return false; // 예약 실패 또는 수용 불가 → 대기열 유지
+	    });
 
-		// 처리하지 못한 요청들을 다시 대기열로 복구
-		waitingList.addAll(skipped); // 어차피 걍 넣어도 우선순위 기준으로 정렬 됨
-
-		if (!hasBooked) {
-			System.out.println("대기열에 예약 가능한 요청이 없습니다.");
-		}
-
+	    if (!hasBooked[0]) {
+	        System.out.println("대기열에 예약 가능한 요청이 없습니다.");
+	    }
 	}
+
+
 }
